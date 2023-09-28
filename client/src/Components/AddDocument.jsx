@@ -52,7 +52,12 @@ export default function AddDocument() {
           startIcon={<CloudUpload />}
         >
           Upload file
-          <VisuallyHiddenInput type="file" />
+          <VisuallyHiddenInput
+            onChange={(e) => {
+              console.log(e.target.value);
+            }}
+            type="file"
+          />
         </Button>
       </Paper>
     </>

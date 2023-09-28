@@ -67,7 +67,15 @@ export default function Navbar() {
           </Typography>
 
           <IconButton onClick={handleClickOpen} color="inherit">
-            <Add />
+            <Box
+              display={{
+                xs: "block",
+                sm: "none",
+              }}
+            >
+              <Add />
+            </Box>
+
             <Typography
               variant="h6"
               component="div"
@@ -83,12 +91,14 @@ export default function Navbar() {
               Add Document
             </Typography>
           </IconButton>
+
           <Dialog
             open={open}
             TransitionComponent={Transition}
             keepMounted
             onClose={handleClose}
             aria-describedby="alert-dialog-slide-description"
+            color="inherit"
           >
             <DialogTitle>
               <Typography
