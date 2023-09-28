@@ -16,6 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import { forwardRef, useState } from "react";
+import AddDocument from "./AddDocument";
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -112,28 +113,7 @@ export default function Navbar() {
                     marginTop: "20px ",
                   }}
                 >
-                  <form>
-                    <div id="form-input">
-                      <TextField
-                        required
-                        variant="outlined"
-                        label="Document Name"
-                        type="text"
-                        name=""
-                        id=""
-                      />
-                    </div>
-                    <div id="form-input">
-                      <TextField
-                        variant="outlined"
-                        label="Document Description"
-                        required
-                        type="text"
-                        name=""
-                        id=""
-                      />
-                    </div>
-                  </form>
+                  <AddDocument />
                 </Box>
               </DialogContentText>
             </DialogContent>
