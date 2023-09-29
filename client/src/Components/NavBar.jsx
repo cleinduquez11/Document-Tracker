@@ -127,14 +127,14 @@ export default function Navbar() {
                 </Box>
               </DialogContentText>
             </DialogContent>
-            {/* <DialogActions>
+            <DialogActions>
               <Button style={{ color: "red" }} onClick={handleClose}>
                 Cancel
               </Button>
               <Button style={{ color: "green" }} onClick={handleClose}>
                 Add
               </Button>
-            </DialogActions> */}
+            </DialogActions>
           </Dialog>
         </Toolbar>
       </AppBar>

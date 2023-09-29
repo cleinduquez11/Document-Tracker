@@ -227,11 +227,7 @@ export default function Dashboard() {
                     {columns.map(({ id, format }) => {
                       const val = row[id];
                       return (
-                        <TableCell
-                          onClick={() => console.log(val)}
-                          key={id}
-                          align="center"
-                        >
+                        <TableCell key={id} align="center">
                           {format && typeof val === "number"
                             ? format(val)
                             : val}
