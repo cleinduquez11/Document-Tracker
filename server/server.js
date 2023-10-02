@@ -9,6 +9,8 @@ const path = require('path');
 const corsOptions = require("./configs/corsOptions");
 const Verify = require("./middleware/jwtVerify");
 const { upload } = require("./middleware/upload");
+const Validate = require("./middleware/validate");
+
 const uri = process.env.ATLAS_URI;
 const app = express();
 const port = process.env.PORT || 5000;
@@ -30,9 +32,8 @@ app.use(express.json());
 // } else {
 //     console.log('MongoDB is not Connected');
 // }
-
  app.use('/auth', authRouter);
- app.use('/docs' , Verify,docRouter);
+ app.use('/docs' , Verify, docRouter);
 
 // app.use('/api/users', Verify, usersRouter);
 
