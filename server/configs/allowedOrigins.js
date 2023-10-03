@@ -3,7 +3,7 @@ const allowedOrigins = [
     'https://localhost:5173',
     'http://localhost:5173',
     'http://localhost:3000',
-    'https://property-scanner-frontend.vercel.app',
+    'http://10.10.10.125:5173',
     
 ]
 

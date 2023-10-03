@@ -1,6 +1,11 @@
 import { Grid, Box, GlobalStyles } from "@mui/material";
 import Dashboard from "./Components/Dashboard";
 import Navbar from "./Components/NavBar";
+import AlignItemsList from "./Components/Sandbox";
+import UsingFetch from "./Components/Sandbox";
+import GetData from "./Components/Dashboard";
+import Preview from "./Components/PreviewSandbox";
+import Details from "./Components/Details";
 
 ///This is the Component that is resposible for Layouting other Components in the DOM
 
@@ -19,19 +24,23 @@ const Layout = () => {
 
       {/* You can use Grid to properly layout the Components in the app */}
       <Grid container justifyContent="center" textAlign="center" gap={2}>
-        <Grid sm={1}>
+        <Grid sm={3}>
           <Box
-            mt={2}
+            height={500}
+            mt={6}
             display={{ xs: "none", sm: "block" }}
             width="auto"
-            height={300}
-          ></Box>
+          >
+            {" "}
+            {/* <UsingFetch /> */}
+          </Box>
         </Grid>
 
         <Grid xs={10} sm={7}>
           <Box height={500} width="auto" mt={6}>
             {/* This is the Dashboard of the application */}
-            <Dashboard />
+            {/* <Preview /> */}
+            <UsingFetch />
           </Box>
         </Grid>
         <Grid sm={2}>
@@ -40,7 +49,9 @@ const Layout = () => {
             height={500}
             width="auto"
             mt={6}
-          ></Box>
+          >
+            {/* <Details /> */}
+          </Box>
         </Grid>
       </Grid>
     </>

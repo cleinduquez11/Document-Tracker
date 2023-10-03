@@ -10,166 +10,232 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
+import { getAllDocuments } from "../Querries/querries";
 
 const columns = [
-  { id: "name", label: "Name", minWidth: 170 },
   {
-    id: "position",
-    label: "Position",
+    id: "docName",
+    label: "Name",
+    minWidth: 170,
+    format: (value) => value.toLocaleString("en-US"),
+  },
+  {
+    id: "docDescription",
+    label: "Description",
     minWidth: 170,
     align: "right",
     format: (value) => value.toLocaleString("en-US"),
   },
   {
-    id: "company",
-    label: "Company",
+    id: "fileName",
+    label: "File",
     minWidth: 170,
     align: "right",
     format: (value) => value.toLocaleString("en-US"),
   },
-  {
-    id: "sender",
-    label: "Sender",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toFixed(2),
-  },
-  {
-    id: "receiver",
-    label: "Receiver",
-    minWidth: 170,
-    align: "right",
-    format: (value) => value.toFixed(2),
-  },
+  // {
+  //   id: "createdAt",
+  //   label: "Created At",
+  //   minWidth: 170,
+  //   align: "right",
+  //   format: (value) => value.toLocaleString("en-US"),
+  // },
+  // {
+  //   id: "updatedAt",
+  //   label: "Updated At",
+  //   minWidth: 170,
+  //   align: "right",
+  //   format: (value) => value.toLocaleString("en-US"),
+  // },
 ];
 
-function createData(name, position, company, sender, receiver) {
-  return { name, position, company, sender, receiver };
+function createData(Name, Description, File, created_at, updated_at) {
+  return { Name, Description, File, created_at, updated_at };
 }
 
-const rows = [
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-  createData(
-    "Mario",
-    "Software Engineer",
-    "Accenture",
-    "mario@yahoo.com",
-    "hr.accenture.com"
-  ),
-];
+// const rows = [
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+//   createData(
+//     "Mario",
+//     "Software Engineer",
+//     "Accenture",
+//     "mario@yahoo.com",
+//     "hr.accenture.com"
+//   ),
+// ];
 
 //This component is responsible for the rendering of the Tables.
+
+const GetData = () => {
+  const [data, setData] = React.useState([]);
+
+  const fetchData = () => {
+    fetch("http://localhost:5000/docs", {
+      method: "GET",
+      // body: formData,
+      headers: {
+        Authorization:
+          "Bearer " +
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setData(data);
+      });
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <>
+      {data.length > 0 &&
+        data.map((row) => {
+          <TableRow hover role="checkbox" tabIndex={-1} key={row._id}>
+            <TableCell key={row.docName} align="center">
+              {row.docName}
+              {/* {row.docName} */}
+              {/* {format && typeof val === "number"
+                        ? format(val)
+                        : row[id]} */}
+            </TableCell>
+            <TableCell key={row.docDesciption} align="center">
+              {row.docDesciption}
+              {/* {row.docName} */}
+              {/* {format && typeof val === "number"
+                        ? format(val)
+                        : row[id]} */}
+            </TableCell>
+            <TableCell key={row.filename} align="center">
+              {row.filename}
+              {/* {row.docName} */}
+              {/* {format && typeof val === "number"
+                        ? format(val)
+                        : row[id]} */}
+            </TableCell>
+          </TableRow>;
+        })}
+    </>
+  );
+};
+
+// export default GetData;
+
 export default function Dashboard() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -178,10 +244,14 @@ export default function Dashboard() {
     setPage(newPage);
   };
 
+  const rows = [];
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  // console.log({ Rows: rows });
   return (
     <Paper elevation={16} sx={{ width: "100%", overflow: "hidden" }}>
       <Typography
@@ -219,24 +289,7 @@ export default function Dashboard() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
-                    {columns.map(({ id, format }) => {
-                      const val = row[id];
-                      return (
-                        <TableCell key={id} align="center">
-                          {format && typeof val === "number"
-                            ? format(val)
-                            : val}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+            <GetData />
           </TableBody>
         </Table>
       </TableContainer>

@@ -14,13 +14,16 @@ import {
   DialogContentText,
   DialogTitle,
   Fade,
+  Input,
   Paper,
   Slide,
   Snackbar,
   TextField,
 } from "@mui/material";
-import { forwardRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import styled from "@emotion/styled";
+import { addDocuments, getAllDocuments } from "../Querries/querries";
+
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -78,41 +81,21 @@ export default function Navbar() {
   const [filename, setFilename] = useState("");
   const [fileValue, setFileValue] = useState("");
 
+  // const name = useRef(null);
+  // const description = useRef(null);
+  // const file = useRef(null);
+  // const filename = useRef(null);
+  // const fileValue = useRef(null);
+
   function onSubmit(e) {
     e.preventDefault();
 
     const formData = new FormData();
     formData.append("Name", name);
     formData.append("Description", description);
-    console.log(file);
+    // console.log(name);
     formData.append("uploaded", file);
     formData.append("fileName", filename);
-    async function upload(formData) {
-      try {
-        const response = await fetch("http://localhost:5000/docs", {
-          method: "POST",
-          body: formData,
-          headers: {
-            Authorization:
-              "Bearer " +
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
-          },
-        });
-        const result = await response.json();
-        handleClose();
-
-        if (result) {
-          if (result.Status == 400) {
-            setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-          } else {
-            setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-          }
-          console.log(result);
-        }
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    }
 
     if (!name || !description || !file) {
       setTimeout(
@@ -125,12 +108,29 @@ export default function Navbar() {
         )
       );
     } else {
-      upload(formData);
-      setName("");
-      setDescription("");
-      setFileValue(null);
-      setFile(null);
-      setFilename("");
+      let result = addDocuments(formData);
+      // console.log(result);
+      result
+        .then((res) => {
+          handleClose();
+          if (res) {
+            if (res.Status == 400) {
+              setTimeout(handleOpen(SlideTransition, res.Message, "error"));
+            } else {
+              setTimeout(handleOpen(SlideTransition, res.Message, "success"));
+            }
+            // console.log(res.Message);
+          }
+
+          setName("");
+          setDescription("");
+          setFileValue(null);
+          setFile(null);
+          setFilename("");
+        })
+        .catch((e) => {
+          setTimeout(handleOpen(SlideTransition, e, "error"));
+        });
     }
   }
 
@@ -155,6 +155,7 @@ export default function Navbar() {
               edge="start"
               color="inherit"
               aria-label="menu"
+              // onClick={getAllDocuments}
               sx={{ mr: 2 }}
             >
               <MenuIcon />
@@ -219,84 +220,86 @@ export default function Navbar() {
                 <DialogContentText id="alert-dialog-slide-description">
                   <Box
                     sx={{
-                      width: "300px",
+                      width: "270px",
                       overflow: "hidden",
-                      paddingLeft: "20px",
-                      paddingRight: "20px",
+                      // paddingLeft: "20px",
+                      // paddingRight: "20px",
                       marginTop: "20px ",
                     }}
                   >
                     <Paper
                       elevation={0}
                       sx={{
-                        padding: "20px",
-                        gap: "20px",
+                        padding: "3px",
+                        // gap: "20px",
                         textAlign: "center",
                       }}
                     >
                       {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
-                      <TextField
-                        required
-                        variant="outlined"
-                        label="Document Name"
-                        type="text"
-                        name=""
-                        id=""
-                        value={name}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setName(e.target.value);
-                        }}
-                      />
-                      <br />
-                      <br />
-
-                      <TextField
-                        variant="outlined"
-                        label="Document Description"
-                        required
-                        type="text"
-                        name=""
-                        id=""
-                        value={description}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setDescription(e.target.value);
-                        }}
-                      />
-                      <br />
-                      <br />
-                      <Box>{filename}</Box>
-                      <Button
-                        component="label"
-                        variant="contained"
-                        startIcon={<CloudUpload />}
-                      >
-                        Upload file
-                        <VisuallyHiddenInput
-                          id="file"
-                          value={fileValue}
+                      <form onSubmit={onSubmit}>
+                        <TextField
+                          // ref={name}
+                          variant="outlined"
+                          label="Document Name"
+                          type="text"
+                          name=""
+                          id=""
+                          value={name}
                           onChange={(e) => {
                             e.preventDefault();
-                            setFile(e.target.files[0]);
-                            setFilename(e.target.files[0].name);
-                            setFileValue(e.target.value);
+                            setName(e.target.value);
                           }}
-                          type="file"
                         />
-                      </Button>
+                        <br />
+                        <br />
 
-                      <br />
-                      <br />
+                        <TextField
+                          // ref={description}
+                          variant="outlined"
+                          label="Document Description"
+                          type="text"
+                          name=""
+                          id=""
+                          value={description}
+                          onChange={(e) => {
+                            e.preventDefault();
+                            setDescription(e.target.value);
+                          }}
+                        />
+                        <br />
+                        <br />
+                        <Box>{filename}</Box>
+                        <Button
+                          component="label"
+                          variant="contained"
+                          startIcon={<CloudUpload />}
+                        >
+                          Upload file
+                          <VisuallyHiddenInput
+                            // ref={file}
+                            id="file"
+                            onChange={(e) => {
+                              e.preventDefault();
+                              setFile(e.target.files[0]);
+                              setFilename(e.target.files[0].name);
+                              setFileValue(e.target.value);
+                            }}
+                            type="file"
+                          />
+                        </Button>
 
-                      <Button
-                        component="label"
-                        variant="contained"
-                        onClick={onSubmit}
-                      >
-                        Add document
-                        <VisuallyHiddenInput />
-                      </Button>
+                        <br />
+                        <br />
+
+                        <Input
+                          component="label"
+                          variant="contained"
+                          type="submit"
+                          // onClick={onSubmit}
+                        >
+                          Add document
+                        </Input>
+                      </form>
                     </Paper>
                   </Box>
                 </DialogContentText>
@@ -314,6 +317,7 @@ export default function Navbar() {
         </AppBar>
       </Box>
 
+      {/* Notifications  */}
       <Snackbar
         open={state.open}
         onClose={handleRemove}
