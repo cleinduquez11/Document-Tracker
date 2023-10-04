@@ -23,6 +23,7 @@ import {
 import { forwardRef, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { addDocuments, getAllDocuments } from "../Querries/querries";
+import AddDoc from "./AddDoc";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -44,6 +45,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 export default function Navbar() {
+  //state for opening the Add Document Modal
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -54,85 +56,66 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  const [state, setState] = useState({
-    open: false,
-    Transition: Fade,
-  });
+  //end
 
-  const handleOpen = (Transition, message, status) => () => {
-    setState({
-      open: true,
-      Transition,
-      message,
-      status,
-    });
-  };
+  // const [name, setName] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [file, setFile] = useState("");
+  // const [filename, setFilename] = useState("");
+  // const [fileValue, setFileValue] = useState("");
 
-  const handleRemove = () => {
-    setState({
-      ...state,
-      open: false,
-    });
-  };
+  // // const name = useRef(null);
+  // // const description = useRef(null);
+  // // const file = useRef(null);
+  // // const filename = useRef(null);
+  // // const fileValue = useRef(null);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [file, setFile] = useState("");
-  const [filename, setFilename] = useState("");
-  const [fileValue, setFileValue] = useState("");
+  // function onSubmit(e) {
+  //   e.preventDefault();
 
-  // const name = useRef(null);
-  // const description = useRef(null);
-  // const file = useRef(null);
-  // const filename = useRef(null);
-  // const fileValue = useRef(null);
+  //   const formData = new FormData();
+  //   formData.append("Name", name);
+  //   formData.append("Description", description);
+  //   // console.log(name);
+  //   formData.append("uploaded", file);
+  //   formData.append("fileName", filename);
 
-  function onSubmit(e) {
-    e.preventDefault();
+  //   if (!name || !description || !file) {
+  //     setTimeout(
+  //       handleOpen(
+  //         SlideTransition,
+  //         `${!name ? "Name," : ""}${!description ? "Description," : ""}${
+  //           !file ? "File" : ""
+  //         } field(s) need to have a value `,
+  //         "error"
+  //       )
+  //     );
+  //   } else {
+  //     let result = addDocuments(formData);
+  //     // console.log(result);
+  //     result
+  //       .then((res) => {
+  //         handleClose();
+  //         if (res) {
+  //           if (res.Status == 400) {
+  //             setTimeout(handleOpen(SlideTransition, res.Message, "error"));
+  //           } else {
+  //             setTimeout(handleOpen(SlideTransition, res.Message, "success"));
+  //           }
+  //           // console.log(res.Message);
+  //         }
 
-    const formData = new FormData();
-    formData.append("Name", name);
-    formData.append("Description", description);
-    // console.log(name);
-    formData.append("uploaded", file);
-    formData.append("fileName", filename);
-
-    if (!name || !description || !file) {
-      setTimeout(
-        handleOpen(
-          SlideTransition,
-          `${!name ? "Name," : ""}${!description ? "Description," : ""}${
-            !file ? "File" : ""
-          } field(s) need to have a value `,
-          "error"
-        )
-      );
-    } else {
-      let result = addDocuments(formData);
-      // console.log(result);
-      result
-        .then((res) => {
-          handleClose();
-          if (res) {
-            if (res.Status == 400) {
-              setTimeout(handleOpen(SlideTransition, res.Message, "error"));
-            } else {
-              setTimeout(handleOpen(SlideTransition, res.Message, "success"));
-            }
-            // console.log(res.Message);
-          }
-
-          setName("");
-          setDescription("");
-          setFileValue(null);
-          setFile(null);
-          setFilename("");
-        })
-        .catch((e) => {
-          setTimeout(handleOpen(SlideTransition, e, "error"));
-        });
-    }
-  }
+  //         setName("");
+  //         setDescription("");
+  //         setFileValue(null);
+  //         setFile(null);
+  //         setFilename("");
+  //       })
+  //       .catch((e) => {
+  //         setTimeout(handleOpen(SlideTransition, e, "error"));
+  //       });
+  //   }
+  // }
 
   return (
     <>
@@ -196,145 +179,16 @@ export default function Navbar() {
                 Add Document
               </Typography>
             </IconButton>
-            <Dialog
+            <AddDoc
               open={open}
-              TransitionComponent={Transition}
-              keepMounted
-              onClose={handleClose}
-              aria-describedby="alert-dialog-slide-description"
-              color="inherit"
-            >
-              <DialogTitle>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    flexGrow: 1,
-                    color: "black",
-                  }}
-                >
-                  Add Document
-                </Typography>
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                  <Box
-                    sx={{
-                      width: "270px",
-                      overflow: "hidden",
-                      // paddingLeft: "20px",
-                      // paddingRight: "20px",
-                      marginTop: "20px ",
-                    }}
-                  >
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        padding: "3px",
-                        // gap: "20px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
-                      <form onSubmit={onSubmit}>
-                        <TextField
-                          // ref={name}
-                          variant="outlined"
-                          label="Document Name"
-                          type="text"
-                          name=""
-                          id=""
-                          value={name}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            setName(e.target.value);
-                          }}
-                        />
-                        <br />
-                        <br />
-
-                        <TextField
-                          // ref={description}
-                          variant="outlined"
-                          label="Document Description"
-                          type="text"
-                          name=""
-                          id=""
-                          value={description}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            setDescription(e.target.value);
-                          }}
-                        />
-                        <br />
-                        <br />
-                        <Box>{filename}</Box>
-                        <Button
-                          component="label"
-                          variant="contained"
-                          startIcon={<CloudUpload />}
-                        >
-                          Upload file
-                          <VisuallyHiddenInput
-                            // ref={file}
-                            id="file"
-                            onChange={(e) => {
-                              e.preventDefault();
-                              setFile(e.target.files[0]);
-                              setFilename(e.target.files[0].name);
-                              setFileValue(e.target.value);
-                            }}
-                            type="file"
-                          />
-                        </Button>
-
-                        <br />
-                        <br />
-
-                        <Input
-                          component="label"
-                          variant="contained"
-                          type="submit"
-                          // onClick={onSubmit}
-                        >
-                          Add document
-                        </Input>
-                      </form>
-                    </Paper>
-                  </Box>
-                </DialogContentText>
-              </DialogContent>
-              {/* <DialogActions>
-              <Button style={{ color: "red" }} onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button style={{ color: "green" }} onClick={handleClose}>
-                Add
-              </Button>
-            </DialogActions> */}
-            </Dialog>
+              handleclose={handleClose}
+              handleclickopen={handleClickOpen}
+            />
           </Toolbar>
         </AppBar>
       </Box>
 
       {/* Notifications  */}
-      <Snackbar
-        open={state.open}
-        onClose={handleRemove}
-        autoHideDuration={6000}
-        severity={state.status}
-        TransitionComponent={state.Transition}
-        message={state.message}
-        key={state.Transition.name}
-      >
-        <Alert
-          onClose={handleRemove}
-          severity={state.status}
-          sx={{ width: "100%" }}
-        >
-          {state.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 }

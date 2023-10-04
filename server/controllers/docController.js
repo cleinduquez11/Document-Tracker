@@ -62,4 +62,46 @@ function GetAllDocuments(req, res) {
 
 }
 
-module.exports = {Add, GetAllDocuments}
+function UpdateDocument(req, res) {
+    const{ItemID, Name, Description, fileName} = req.body;
+    const{UNIQUESUFFIX} = req;
+    const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
+    console.log(req)
+    Document.findByIdAndUpdate(ItemID,
+        
+        
+        { 
+            docName: Name,
+            docDescription: Description,
+            fileName: UNIQUESUFFIX,
+            fileLink:FileLink
+        
+        }).then(()=>{
+        res.status(200).json({'Message': "Updated"});
+
+    }).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    })
+
+  
+
+
+}
+
+
+function deleteDocument(req, res) {
+    const{id} = req.query;
+    Document.findByIdAndDelete(id).then(()=>{
+        res.status(200).json({'Message': "Deleted",
+    });
+
+    }).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    })
+
+  
+
+
+}
+
+module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument}

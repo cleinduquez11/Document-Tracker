@@ -6,13 +6,68 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { getAllDocuments } from "../Querries/querries";
-import { IconButton, Paper } from "@mui/material";
+import { deleteDocuments, getAllDocuments } from "../Querries/querries";
+import {
+  Alert,
+  Box,
+  Fade,
+  IconButton,
+  Paper,
+  Slide,
+  Snackbar,
+} from "@mui/material";
 import { Delete, Edit, FileCopy } from "@mui/icons-material";
+import Update from "./UpdateDoc";
+import { deleteformdata } from "../Utils/FormData";
+import Notification from "./Notification";
+
+// function UpdateDoc() {
+//   return (
+//     <>
+//       <Update />
+//     </>
+//   );
+// }
+function SlideTransition(props) {
+  return <Slide {...props} direction="up" />;
+}
 
 const UsingFetch = () => {
+  const [state, setState] = React.useState({
+    open: false,
+    Transition: Fade,
+  });
+
+  const handleOpen = (Transition, message, status) => () => {
+    setState({
+      open: true,
+      Transition,
+      message,
+      status,
+    });
+  };
+
+  const handleRemove = () => {
+    setState({
+      ...state,
+      open: false,
+    });
+  };
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const deleteItem = () => {};
+
   const [data, setData] = React.useState([]);
   const [clicked, setClicked] = React.useState(false);
+  const [item, setItem] = React.useState({});
 
   const fetchData = () => {
     fetch("http://localhost:5000/docs", {
@@ -37,7 +92,7 @@ const UsingFetch = () => {
   });
 
   return (
-    <div>
+    <>
       {data.length > 0 && (
         <Paper
           elevation={16}
@@ -61,47 +116,133 @@ const UsingFetch = () => {
           >
             {data.map((d) => (
               <>
-                <ListItem
+                <Box
                   sx={{
                     "&:hover": {
                       background: "#CCC7BF",
                     },
                   }}
-                  onClick={(e) => {
-                    console.log(d._id);
-                    setClicked((previousState) => {
-                      !previousState;
-                    });
-                  }}
-                  secondaryAction={
-                    <>
-                      <IconButton edge="end" aria-label="Edit">
-                        <Edit />
-                      </IconButton>
-                      &#160; &#160; &#160;
-                      <IconButton edge="end" aria-label="Edit">
-                        <Delete />
-                      </IconButton>
-                    </>
-                  }
                 >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FileCopy />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={d.docName}
-                    // secondary={d.docDescription}
-                  />
-                </ListItem>
+                  <ListItem
+                    // onClick={handleClickOpen}
+                    secondaryAction={
+                      <>
+                        <IconButton
+                          key={d._id}
+                          onClick={() => {
+                            handleClickOpen();
+                            setItem(d);
+                          }}
+                          edge="end"
+                          aria-label="Edit"
+                        >
+                          <Edit
+                            sx={{
+                              "&:hover": {
+                                color: "blue",
+                              },
+                            }}
+                          />
+                        </IconButton>
+                        &#160; &#160; &#160;
+                        <IconButton
+                          onClick={() => {
+                            console.log(d._id);
+                            let result = deleteDocuments(d._id);
+                            result
+                              .then((res) => {
+                                if (res) {
+                                  if (res.Status == 400) {
+                                    setTimeout(
+                                      handleOpen(
+                                        SlideTransition,
+                                        res.Message,
+                                        "error"
+                                      )
+                                    );
+                                  } else {
+                                    setTimeout(
+                                      handleOpen(
+                                        SlideTransition,
+                                        res.Message,
+                                        "success"
+                                      )
+                                    );
+                                  }
+
+                                  // console.log(res.Message);
+                                }
+                              })
+                              .catch((e) => {
+                                setTimeout(
+                                  handleOpen(SlideTransition, e, "error")
+                                );
+                              });
+                          }}
+                          edge="end"
+                          aria-label="Edit"
+                        >
+                          <Delete
+                            sx={{
+                              "&:hover": {
+                                color: "red",
+                              },
+                            }}
+                          />
+                        </IconButton>
+                      </>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <FileCopy />
+                      </Avatar>
+                    </ListItemAvatar>
+
+                    <Box>
+                      {" "}
+                      <ListItemText
+                        primary={d.docName}
+                        // secondary={d.docDescription}
+                      />
+                    </Box>
+                  </ListItem>
+                </Box>
+
                 <br />
               </>
             ))}
           </List>
         </Paper>
       )}
-    </div>
+
+      <Update
+        open={open}
+        handleClickOpen={handleClickOpen}
+        handleClose={handleClose}
+        formTitle="Edit"
+        item={item}
+      />
+
+      <Snackbar
+        open={state.open}
+        onClose={handleRemove}
+        autoHideDuration={6000}
+        severity={state.status}
+        TransitionComponent={state.Transition}
+        message={state.message}
+        key={state.Transition.name}
+        // onClick={handleclickopen}
+      >
+        <Alert
+          onClose={handleRemove}
+          severity={state.status}
+          sx={{ width: "100%" }}
+        >
+          {state.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
