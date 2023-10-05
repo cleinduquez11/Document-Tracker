@@ -14,11 +14,11 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import login_sidebg from '../Assets/login_sidebg.svg';
 import { loginformdata } from '../Utils/FormData';
 import { login } from '../Querries/querries';
-
+import {useNavigate} from "react-router-dom"
 const defaultTheme = createTheme();
 
 export default function Login() {
-
+  const navigate = useNavigate(); 
 const [user, setUser ] = React.useState("");
 
 const [pass, setPass ] = React.useState("");
@@ -36,7 +36,12 @@ const [pass, setPass ] = React.useState("");
     //   password: pass,
     // });
     result.then((res)=> {
-      console.log(res.message);
+      console.log(res);
+      if (res.uSer) {
+        navigate('/home');
+      }
+     
+      
     })
 
 
@@ -90,7 +95,7 @@ const [pass, setPass ] = React.useState("");
                 fullWidth
                 id="email"
                 label="Email Address"
-                name="email"
+                // name="email"
                 autoComplete="email"
                 autoFocus
                 onChange ={(e)=> {
@@ -101,7 +106,7 @@ const [pass, setPass ] = React.useState("");
               <TextField
                 margin="normal"
                 fullWidth
-                name="password"
+                // name="password"
                 label="Password"
                 type="password"
                 id="password"

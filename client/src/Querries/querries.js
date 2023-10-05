@@ -31,18 +31,25 @@ async function addDocuments(formData) {
   }
 
 
-  async function login(formData) {
+  async function login(user,pass) {
     try {
       const response = await fetch("http://localhost:5000/auth", {
+
         method: "POST",
-        body: formData,
-        // headers: {
-        //   Authorization:
-        //     "Bearer " +
-        //     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+        
+        body: JSON.stringify({
+          "user": user,
+          "pass": pass
+      
+      }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            "Bearer " +
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
        
        
-        // },
+        },
       });
       const result = await response.json();
       return result;
