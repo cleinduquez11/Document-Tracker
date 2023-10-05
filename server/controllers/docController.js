@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken')
 const path = require('path');
 const secret_key = process.env.SECRET_ACCESS_TOKEN;
 const Document = require('../models/docModel');
-
+const fs = require('fs');
 
 
 //Add The Name, Description, File, Filename in the Database
@@ -67,6 +67,21 @@ function UpdateDocument(req, res) {
     const{UNIQUESUFFIX} = req;
     const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
     console.log(req)
+if (!UNIQUESUFFIX) {
+        return;
+}
+else {
+    Document.findById(ItemID).then((doc)=>
+    fs.unlink(doc.fileLink, function (err) {
+        if (err) throw err;
+        console.log('File deleted!');
+      })
+    
+    ).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    });
+}
+ 
     Document.findByIdAndUpdate(ItemID,
         
         
@@ -91,6 +106,16 @@ function UpdateDocument(req, res) {
 
 function deleteDocument(req, res) {
     const{id} = req.query;
+
+    Document.findById(id).then((doc)=>
+    fs.unlink(doc.fileLink, function (err) {
+        if (err) throw err;
+        console.log('File deleted!');
+      })
+    
+    ).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    });
     Document.findByIdAndDelete(id).then(()=>{
         res.status(200).json({'Message': "Deleted",
     });
@@ -104,4 +129,19 @@ function deleteDocument(req, res) {
 
 }
 
-module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument}
+function viewDocument(req, res) {
+    const{id} = req.query;
+    Document.findById(id).then((d)=>{
+        // res.sendFile(path.join(__dirname + '../' + '/storage/' + d.fileName));
+         res.status(200).json({'FileLink': `http://localhost:5000/static/${d.fileName}?authToken=123`});
+
+    }).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    })
+
+  
+
+
+}
+
+module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument}

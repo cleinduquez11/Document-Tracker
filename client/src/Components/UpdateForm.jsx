@@ -16,7 +16,7 @@ import {
 import styled from "@emotion/styled";
 import { CloudUpload } from "@mui/icons-material";
 import { updateDocuments } from "../Querries/querries";
-import { validate } from "../Utils/Validate";
+import { validate, validateUpdate } from "../Utils/Validate";
 import { updateformdata } from "../Utils/FormData";
 
 function SlideTransition(props) {
@@ -43,10 +43,16 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
   const [fileValue, setFileValue] = useState("");
   function onSubmit(e) {
     e.preventDefault();
-    const validatedData = validate(name, description, file);
+    const validatedData = validateUpdate(name, description, file);
     if (validatedData.Status) {
       let result = updateDocuments(
-        updateformdata(item._id, name, description, file, filename)
+        updateformdata(
+          item._id,
+          name ?? item.docName,
+          description ?? item.docDescription,
+          file,
+          filename ?? item.fileName
+        )
       );
       result
         .then((res) => {

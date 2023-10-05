@@ -1,12 +1,8 @@
 import { Grid, Box, GlobalStyles } from "@mui/material";
-import Dashboard from "./Components/Dashboard";
+
 import Navbar from "./Components/NavBar";
-import AlignItemsList from "./Components/Sandbox";
+
 import UsingFetch from "./Components/Sandbox";
-import GetData from "./Components/Dashboard";
-import Preview from "./Components/PreviewSandbox";
-import Details from "./Components/Details";
-import { useState } from "react";
 
 ///This is the Component that is resposible for Layouting other Components in the DOM
 

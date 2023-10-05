@@ -6,7 +6,11 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import { deleteDocuments, getAllDocuments } from "../Querries/querries";
+import {
+  deleteDocuments,
+  getAllDocuments,
+  viewDocuments,
+} from "../Querries/querries";
 import {
   Alert,
   Box,
@@ -124,6 +128,7 @@ const UsingFetch = () => {
                   }}
                 >
                   <ListItem
+                    onDoubleClick={() => {}}
                     // onClick={handleClickOpen}
                     secondaryAction={
                       <>
@@ -199,7 +204,19 @@ const UsingFetch = () => {
                       </Avatar>
                     </ListItemAvatar>
 
-                    <Box>
+                    <Box
+                      onClick={() => {
+                        let result = viewDocuments(d._id);
+
+                        result.then((res) => {
+                          window.open(res.FileLink);
+                        });
+                        console.log(d._id);
+                      }}
+                      sx={{
+                        width: "85%",
+                      }}
+                    >
                       {" "}
                       <ListItemText
                         primary={d.docName}

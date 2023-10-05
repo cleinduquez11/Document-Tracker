@@ -36,8 +36,9 @@ function Authenticate(req, res) {
         secret_key
     
         )
-
-        res.status(200).json({"message": "You are now Authenticated",uSer, "Access Token" : accessToken});
+    
+         res.status(200).json({"message": "You are now Authenticated",uSer, "Access Token" : accessToken});
+        
     }
 
     
