@@ -29,15 +29,9 @@ const [pass, setPass ] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
     let result = login(user,pass);
-    
-    // const data = new FormData(user,pass);
-    // console.log({
-    //   email: user,
-    //   password: pass,
-    // });
     result.then((res)=> {
       console.log(res);
-      if (res.uSer) {
+      if (res.u) {
         navigate('/home');
       }
      
