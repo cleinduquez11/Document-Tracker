@@ -6,8 +6,8 @@ const secret_key = process.env.SECRET_ACCESS_TOKEN;
 
 const Users = [
     {
-        username: "Clein",
-        password: "0427"
+        username: "admin",
+        password: "admin"
     },
     {
         username: "Winslee",
@@ -17,6 +17,7 @@ const Users = [
 ]
 function Authenticate(req, res) {
     const {user, pass } = req.body;
+    console.log(req)
     let uSer = _.find(Users, (u)=>{
       if(u.username == user && u.password == pass){
         
