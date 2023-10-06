@@ -14,13 +14,18 @@ import {
   DialogContentText,
   DialogTitle,
   Fade,
+  Input,
   Paper,
   Slide,
   Snackbar,
   TextField,
 } from "@mui/material";
-import { forwardRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import styled from "@emotion/styled";
+import { addDocuments, getAllDocuments } from "../Querries/querries";
+import AddDoc from "./AddDoc";
+import AccountMenu from "./Menu";
+
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -40,7 +45,8 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-export default function Navbar() {
+export default function Navbar({ handleClick }) {
+  //state for opening the Add Document Modal
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -51,88 +57,66 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  const [state, setState] = useState({
-    open: false,
-    Transition: Fade,
-  });
+  //end
 
-  const handleOpen = (Transition, message, status) => () => {
-    setState({
-      open: true,
-      Transition,
-      message,
-      status,
-    });
-  };
+  // const [name, setName] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [file, setFile] = useState("");
+  // const [filename, setFilename] = useState("");
+  // const [fileValue, setFileValue] = useState("");
 
-  const handleRemove = () => {
-    setState({
-      ...state,
-      open: false,
-    });
-  };
+  // // const name = useRef(null);
+  // // const description = useRef(null);
+  // // const file = useRef(null);
+  // // const filename = useRef(null);
+  // // const fileValue = useRef(null);
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [file, setFile] = useState("");
-  const [filename, setFilename] = useState("");
-  const [fileValue, setFileValue] = useState("");
+  // function onSubmit(e) {
+  //   e.preventDefault();
 
-  function onSubmit(e) {
-    e.preventDefault();
+  //   const formData = new FormData();
+  //   formData.append("Name", name);
+  //   formData.append("Description", description);
+  //   // console.log(name);
+  //   formData.append("uploaded", file);
+  //   formData.append("fileName", filename);
 
-    const formData = new FormData();
-    formData.append("Name", name);
-    formData.append("Description", description);
-    console.log(file);
-    formData.append("uploaded", file);
-    formData.append("fileName", filename);
-    async function upload(formData) {
-      try {
-        const response = await fetch("http://localhost:5000/docs", {
-          method: "POST",
-          body: formData,
-          headers: {
-            Authorization:
-              "Bearer " +
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
-          },
-        });
-        const result = await response.json();
-        handleClose();
+  //   if (!name || !description || !file) {
+  //     setTimeout(
+  //       handleOpen(
+  //         SlideTransition,
+  //         `${!name ? "Name," : ""}${!description ? "Description," : ""}${
+  //           !file ? "File" : ""
+  //         } field(s) need to have a value `,
+  //         "error"
+  //       )
+  //     );
+  //   } else {
+  //     let result = addDocuments(formData);
+  //     // console.log(result);
+  //     result
+  //       .then((res) => {
+  //         handleClose();
+  //         if (res) {
+  //           if (res.Status == 400) {
+  //             setTimeout(handleOpen(SlideTransition, res.Message, "error"));
+  //           } else {
+  //             setTimeout(handleOpen(SlideTransition, res.Message, "success"));
+  //           }
+  //           // console.log(res.Message);
+  //         }
 
-        if (result) {
-          if (result.Status == 400) {
-            setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-          } else {
-            setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-          }
-          console.log(result);
-        }
-      } catch (error) {
-        console.log("Error:", error);
-      }
-    }
-
-    if (!name || !description || !file) {
-      setTimeout(
-        handleOpen(
-          SlideTransition,
-          `${!name ? "Name," : ""}${!description ? "Description," : ""}${
-            !file ? "File" : ""
-          } field(s) need to have a value `,
-          "error"
-        )
-      );
-    } else {
-      upload(formData);
-      setName("");
-      setDescription("");
-      setFileValue(null);
-      setFile(null);
-      setFilename("");
-    }
-  }
+  //         setName("");
+  //         setDescription("");
+  //         setFileValue(null);
+  //         setFile(null);
+  //         setFilename("");
+  //       })
+  //       .catch((e) => {
+  //         setTimeout(handleOpen(SlideTransition, e, "error"));
+  //       });
+  //   }
+  // }
 
   return (
     <>
@@ -155,19 +139,20 @@ export default function Navbar() {
               edge="start"
               color="inherit"
               aria-label="menu"
+              // onClick={getAllDocuments}
               sx={{ mr: 2 }}
             >
-              <MenuIcon />
+              <AccountMenu />
             </IconButton>
             <Typography
               variant="h6"
               component="div"
               sx={{
                 flexGrow: 1,
-                color: "black",
+                color: "white",
               }}
             >
-              Document Tracker
+              Document Manager
             </Typography>
 
             <IconButton onClick={handleClickOpen} color="inherit">
@@ -177,7 +162,7 @@ export default function Navbar() {
                   sm: "none",
                 }}
               >
-                <Add />
+                <Add sx={{ color: "white" }} />
               </Box>
 
               <Typography
@@ -189,148 +174,23 @@ export default function Navbar() {
                 }}
                 sx={{
                   flexGrow: 1,
-                  color: "black",
+                  color: "white",
                 }}
               >
                 Add Document
               </Typography>
             </IconButton>
-            <Dialog
+            <AddDoc
               open={open}
-              TransitionComponent={Transition}
-              keepMounted
-              onClose={handleClose}
-              aria-describedby="alert-dialog-slide-description"
-              color="inherit"
-            >
-              <DialogTitle>
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    flexGrow: 1,
-                    color: "black",
-                  }}
-                >
-                  Add Document
-                </Typography>
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText id="alert-dialog-slide-description">
-                  <Box
-                    sx={{
-                      width: "300px",
-                      overflow: "hidden",
-                      paddingLeft: "20px",
-                      paddingRight: "20px",
-                      marginTop: "20px ",
-                    }}
-                  >
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        padding: "20px",
-                        gap: "20px",
-                        textAlign: "center",
-                      }}
-                    >
-                      {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
-                      <TextField
-                        required
-                        variant="outlined"
-                        label="Document Name"
-                        type="text"
-                        name=""
-                        id=""
-                        value={name}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setName(e.target.value);
-                        }}
-                      />
-                      <br />
-                      <br />
-
-                      <TextField
-                        variant="outlined"
-                        label="Document Description"
-                        required
-                        type="text"
-                        name=""
-                        id=""
-                        value={description}
-                        onChange={(e) => {
-                          e.preventDefault();
-                          setDescription(e.target.value);
-                        }}
-                      />
-                      <br />
-                      <br />
-                      <Box>{filename}</Box>
-                      <Button
-                        component="label"
-                        variant="contained"
-                        startIcon={<CloudUpload />}
-                      >
-                        Upload file
-                        <VisuallyHiddenInput
-                          id="file"
-                          value={fileValue}
-                          onChange={(e) => {
-                            e.preventDefault();
-                            setFile(e.target.files[0]);
-                            setFilename(e.target.files[0].name);
-                            setFileValue(e.target.value);
-                          }}
-                          type="file"
-                        />
-                      </Button>
-
-                      <br />
-                      <br />
-
-                      <Button
-                        component="label"
-                        variant="contained"
-                        onClick={onSubmit}
-                      >
-                        Add document
-                        <VisuallyHiddenInput />
-                      </Button>
-                    </Paper>
-                  </Box>
-                </DialogContentText>
-              </DialogContent>
-              {/* <DialogActions>
-              <Button style={{ color: "red" }} onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button style={{ color: "green" }} onClick={handleClose}>
-                Add
-              </Button>
-            </DialogActions> */}
-            </Dialog>
+              handleclose={handleClose}
+              handleclickopen={handleClickOpen}
+              handleClick={handleClick}
+            />
           </Toolbar>
         </AppBar>
       </Box>
 
-      <Snackbar
-        open={state.open}
-        onClose={handleRemove}
-        autoHideDuration={6000}
-        severity={state.status}
-        TransitionComponent={state.Transition}
-        message={state.message}
-        key={state.Transition.name}
-      >
-        <Alert
-          onClose={handleRemove}
-          severity={state.status}
-          sx={{ width: "100%" }}
-        >
-          {state.message}
-        </Alert>
-      </Snackbar>
+      {/* Notifications  */}
     </>
   );
 }
