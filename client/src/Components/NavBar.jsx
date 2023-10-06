@@ -24,6 +24,7 @@ import { forwardRef, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { addDocuments, getAllDocuments } from "../Querries/querries";
 import AddDoc from "./AddDoc";
+import AccountMenu from "./Menu";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -44,7 +45,7 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
-export default function Navbar() {
+export default function Navbar({ handleClick }) {
   //state for opening the Add Document Modal
   const [open, setOpen] = useState(false);
 
@@ -141,17 +142,17 @@ export default function Navbar() {
               // onClick={getAllDocuments}
               sx={{ mr: 2 }}
             >
-              <MenuIcon />
+              <AccountMenu />
             </IconButton>
             <Typography
               variant="h6"
               component="div"
               sx={{
                 flexGrow: 1,
-                color: "black",
+                color: "white",
               }}
             >
-              Document Tracker
+              Document Manager
             </Typography>
 
             <IconButton onClick={handleClickOpen} color="inherit">
@@ -161,7 +162,7 @@ export default function Navbar() {
                   sm: "none",
                 }}
               >
-                <Add />
+                <Add sx={{ color: "white" }} />
               </Box>
 
               <Typography
@@ -173,7 +174,7 @@ export default function Navbar() {
                 }}
                 sx={{
                   flexGrow: 1,
-                  color: "black",
+                  color: "white",
                 }}
               >
                 Add Document
@@ -183,6 +184,7 @@ export default function Navbar() {
               open={open}
               handleclose={handleClose}
               handleclickopen={handleClickOpen}
+              handleClick={handleClick}
             />
           </Toolbar>
         </AppBar>

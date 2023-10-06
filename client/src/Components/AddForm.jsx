@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -35,21 +35,30 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const AddForm = ({ open, handleclose, formTitle, handleOpen }) => {
+const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
+  const token = localStorage?.getItem("token");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [filename, setFilename] = useState("");
   const [fileValue, setFileValue] = useState("");
+  const [clicked, setClicked] = useState(false);
 
   function onSubmit(e) {
     e.preventDefault();
     const validatedData = validate(name, description, file);
     if (validatedData.Status) {
-      let result = addDocuments(formdata(name, description, file, filename));
+      let result = addDocuments(
+        formdata(name, description, file, filename),
+        token
+      );
+      // setClicked((previous) => {
+      //   previous = !previous;
+      // });
       result
         .then((res) => {
           handleclose();
+          handleClick();
           if (res) {
             if (res.Status == 400) {
               setTimeout(handleOpen(SlideTransition, res.Message, "error"));
@@ -74,6 +83,12 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen }) => {
       setTimeout(handleOpen(SlideTransition, validatedData.Message, "error"));
     }
   }
+
+  // function isClicked() {}
+  // useEffect(() => {
+  //   localStorage.setItem("submitted", clicked);
+  //   // isClicked();
+  // }, [clicked]);
 
   return (
     <>

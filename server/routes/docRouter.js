@@ -12,7 +12,7 @@ router.route('/')
 
 
 router.route('/views')
-.get(viewDocument)
+.post(viewDocument)
 
 
 

@@ -36,6 +36,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
+  const token = localStorage?.getItem("token");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
@@ -52,7 +53,8 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
           description ?? item.docDescription,
           file,
           filename ?? item.fileName
-        )
+        ),
+        token
       );
       result
         .then((res) => {
@@ -106,6 +108,8 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             <Box
+              component="form"
+              noValidate
               sx={{
                 width: "270px",
                 overflow: "hidden",
@@ -116,6 +120,7 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
             >
               <Paper
                 elevation={0}
+                component="form"
                 sx={{
                   padding: "20px",
                   // gap: "20px",

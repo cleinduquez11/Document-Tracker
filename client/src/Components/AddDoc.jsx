@@ -10,7 +10,12 @@ import AddForm from "./AddForm";
 //   return <Slide direction="up" ref={ref} {...props} />;
 // });
 
-export default function AddDoc({ open, handleclose, handleclickopen }) {
+export default function AddDoc({
+  open,
+  handleclose,
+  handleclickopen,
+  handleClick,
+}) {
   const [state, setState] = useState({
     open: false,
     Transition: Fade,
@@ -40,6 +45,7 @@ export default function AddDoc({ open, handleclose, handleclickopen }) {
         open={open}
         handleclose={handleclose}
         handleOpen={handleOpen}
+        handleClick={handleClick}
       />
       {/* Notifications */}
       <Notification

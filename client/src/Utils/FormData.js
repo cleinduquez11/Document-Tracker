@@ -11,6 +11,17 @@ function formdata(name, description,file,filename) {
 return formData;
     }
 
+    function loginformdata(user, pass) {
+        const formData = new FormData();
+       formData.append("user", user);
+       formData.append("pass", pass);
+       // console.log(name);
+
+   
+   return formData;
+       }
+   
+
 
     
 
@@ -35,6 +46,6 @@ return formData;
    }
 
 
-   export{formdata, updateformdata, deleteformdata}
+   export{formdata, updateformdata, deleteformdata, loginformdata}
 
 

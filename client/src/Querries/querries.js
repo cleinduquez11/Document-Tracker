@@ -1,4 +1,4 @@
-async function addDocuments(formData) {
+async function addDocuments(formData, token) {
     try {
       const response = await fetch("http://localhost:5000/docs", {
         method: "POST",
@@ -6,7 +6,7 @@ async function addDocuments(formData) {
         headers: {
           Authorization:
             "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+            token,
        
        
         },
@@ -14,24 +14,38 @@ async function addDocuments(formData) {
       const result = await response.json();
       return result;
 
-
-    //   handleClose();
-
-    //   if (result) {
-    //     if (result.Status == 400) {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-    //     } else {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-    //     }
-    //     console.log(result);
-    //   }
     } catch (error) {
       console.log("Error:", error);
     }
   }
 
 
-  async function updateDocuments(formData) {
+  async function login(user,pass) {
+    try {
+      const response = await fetch("http://localhost:5000/auth", {
+
+        method: "POST",
+        
+        body: JSON.stringify({
+          "user": user,
+          "pass": pass
+      
+      }),
+        headers: {
+          'Content-Type': 'application/json',
+      
+        },
+      });
+      const result = await response.json();
+      return result;
+
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+
+  async function updateDocuments(formData, token) {
     try {
       const response = await fetch(`http://localhost:5000/docs`, {
         method: "PATCH",
@@ -39,7 +53,7 @@ async function addDocuments(formData) {
         headers: {
           Authorization:
             "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+            token,
        
        
         },
@@ -48,32 +62,21 @@ async function addDocuments(formData) {
       return result;
 
 
-    //   handleClose();
 
-    //   if (result) {
-    //     if (result.Status == 400) {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-    //     } else {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-    //     }
-    //     console.log(result);
-    //   }
     } catch (error) {
       console.log("Error:", error);
     }
   }
 
 
-  async function deleteDocuments(id) {
+  async function deleteDocuments(id, token) {
     try {
       const response = await fetch(`http://localhost:5000/docs?id=${id}`, {
         method: "DELETE",
-        // query: formData,
-        //  body:{id: id },
         headers: {
           Authorization:
             "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+            token,
        
        
         },
@@ -82,16 +85,6 @@ async function addDocuments(formData) {
       return result;
 
 
-    //   handleClose();
-
-    //   if (result) {
-    //     if (result.Status == 400) {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-    //     } else {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-    //     }
-    //     console.log(result);
-    //   }
     } catch (error) {
       console.log("Error:", error);
     }
@@ -99,16 +92,20 @@ async function addDocuments(formData) {
 
 
 
-  async function viewDocuments(id) {
+  async function viewDocuments(id,token) {
     try {
-      const response = await fetch(`http://localhost:5000/docs/views?id=${id}`, {
-        method: "GET",
-        // query: formData,
-        //  body:{id: id },
+      const response = await fetch(`http://localhost:5000/docs/views`, {
+        method: "POST",
+        body: JSON.stringify({
+          "id": id,
+          "token": token
+      
+      }),
         headers: {
+          'Content-Type': 'application/json',
           Authorization:
             "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+            token,
        
        
         },
@@ -117,16 +114,7 @@ async function addDocuments(formData) {
       return result;
 
 
-    //   handleClose();
 
-    //   if (result) {
-    //     if (result.Status == 400) {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-    //     } else {
-    //       setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-    //     }
-    //     console.log(result);
-    //   }
     } catch (error) {
       console.log("Error:", error);
     }
@@ -135,32 +123,22 @@ async function addDocuments(formData) {
 
 
 
-async function getAllDocuments() {
+async function getAllDocuments(token) {
     try {
       const response = await fetch("http://localhost:5000/docs", {
         method: "GET",
-        // body: formData,
         headers: {
           Authorization:
             "Bearer " +
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
+            token,
         },
       });
       const result = await response.json();
       return result;
-      // handleClose();
 
-      // if (result) {
-      //   if (result.Status == 400) {
-      //     setTimeout(handleOpen(SlideTransition, result.Message, "error"));
-      //   } else {
-      //     setTimeout(handleOpen(SlideTransition, result.Message, "success"));
-      //   }
-      //   console.log(result);
-      // }
     } catch (error) {
       console.log("Error:", error);
     }
   }
 
-  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments}
+  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments, login}
