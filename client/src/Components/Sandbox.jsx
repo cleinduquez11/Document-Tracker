@@ -22,26 +22,21 @@ import {
 } from "@mui/material";
 import { Delete, Edit, FileCopy } from "@mui/icons-material";
 import Update from "./UpdateDoc";
-import { deleteformdata } from "../Utils/FormData";
-import Notification from "./Notification";
 
-// function UpdateDoc() {
-//   return (
-//     <>
-//       <Update />
-//     </>
-//   );
-// }
 function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
 }
 
-const UsingFetch = () => {
+const UsingFetch = ({ clicked }) => {
+  // console.log(clicked);
+  const token = localStorage?.getItem("token");
+  // const isClicked = localStorage.getItem("submitted");
+  // console.log(isClicked);
   const [state, setState] = React.useState({
     open: false,
     Transition: Fade,
   });
-
+  // console.log(token);
   const handleOpen = (Transition, message, status) => () => {
     setState({
       open: true,
@@ -67,28 +62,19 @@ const UsingFetch = () => {
     setOpen(false);
   };
 
-  const deleteItem = () => {};
+  // const deleteItem = () => {};
 
   const [data, setData] = React.useState([]);
-  const [clicked, setClicked] = React.useState(false);
+
   const [item, setItem] = React.useState({});
+  const [uri, setUri] = React.useState([
+    "http://localhost:5000/static/1696566736510-Intern-NDA-Template.docx?authToken=123",
+  ]);
 
   const fetchData = () => {
-    fetch("http://localhost:5000/docs", {
-      method: "GET",
-      // body: formData,
-      headers: {
-        Authorization:
-          "Bearer " +
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkNsZWluIiwicGFzc3dvcmQiOiIwNDI3IiwiaWF0IjoxNjk2MjEzMzk0fQ.yKSGJjca9NKcRSObKXIn7plWgGn7sbf2VzRnO2a-zgs",
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
-      });
+    getAllDocuments(token).then((data) => {
+      setData(data);
+    });
   };
 
   React.useEffect(() => {
@@ -99,15 +85,23 @@ const UsingFetch = () => {
     <>
       {data.length > 0 && (
         <Paper
-          elevation={16}
-          sx={{ width: "100%", overflow: "hidden", justifyContent: "center" }}
+          elevation={24}
+          // bgcolor="inherit"
+          sx={{
+            bgcolor: "inherit",
+            width: "100%",
+            overflow: "hidden",
+            justifyContent: "center",
+          }}
         >
           <Typography
             variant="h4"
             component="div"
             textAlign="start"
             p={2}
-            bgcolor="#CCC7BF"
+            color="white"
+            // bgcolor="inherit"
+            // bgcolor="#CCC7BF"
           >
             Documents
           </Typography>
@@ -116,6 +110,7 @@ const UsingFetch = () => {
               justifyContent: "center",
               textAlign: "center",
               width: "100%",
+              color: "white",
             }}
           >
             {data.map((d) => (
@@ -128,15 +123,21 @@ const UsingFetch = () => {
                   }}
                 >
                   <ListItem
-                    onDoubleClick={() => {}}
+                    sx={{
+                      // bgcolor: "#CCC7BF",
+                      bgcolor: "inherit",
+                      color: "white",
+                    }}
+                    key={d._id}
+                    // onDoubleClick={() => {}}
                     // onClick={handleClickOpen}
                     secondaryAction={
                       <>
                         <IconButton
-                          key={d._id}
+                          //   key={d._id}
                           onClick={() => {
-                            handleClickOpen();
                             setItem(d);
+                            handleClickOpen();
                           }}
                           edge="end"
                           aria-label="Edit"
@@ -146,14 +147,15 @@ const UsingFetch = () => {
                               "&:hover": {
                                 color: "blue",
                               },
+                              color: "white",
                             }}
                           />
                         </IconButton>
                         &#160; &#160; &#160;
                         <IconButton
                           onClick={() => {
-                            console.log(d._id);
-                            let result = deleteDocuments(d._id);
+                            //  console.log(d._id);
+                            let result = deleteDocuments(d._id, token);
                             result
                               .then((res) => {
                                 if (res) {
@@ -192,13 +194,14 @@ const UsingFetch = () => {
                               "&:hover": {
                                 color: "red",
                               },
+                              color: "white",
                             }}
                           />
                         </IconButton>
                       </>
                     }
                   >
-                    <ListItemAvatar>
+                    <ListItemAvatar key={d._id}>
                       <Avatar>
                         <FileCopy />
                       </Avatar>
@@ -206,12 +209,14 @@ const UsingFetch = () => {
 
                     <Box
                       onClick={() => {
-                        let result = viewDocuments(d._id);
+                        let result = viewDocuments(d._id, token);
 
                         result.then((res) => {
+                          // setUri(res.FileLink);
+                          // console.log(res);
                           window.open(res.FileLink);
                         });
-                        console.log(d._id);
+                        // console.log(d._id);
                       }}
                       sx={{
                         width: "85%",
@@ -240,6 +245,7 @@ const UsingFetch = () => {
         formTitle="Edit"
         item={item}
       />
+      {/* <Viewer /> */}
 
       <Snackbar
         open={state.open}

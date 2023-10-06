@@ -130,10 +130,11 @@ function deleteDocument(req, res) {
 }
 
 function viewDocument(req, res) {
-    const{id} = req.query;
+    const{id, token} = req.body;
+    // console.log(req)
     Document.findById(id).then((d)=>{
         // res.sendFile(path.join(__dirname + '../' + '/storage/' + d.fileName));
-         res.status(200).json({'FileLink': `http://localhost:5000/static/${d.fileName}?authToken=123`});
+         res.status(200).json({'FileLink': `http://localhost:5000/static/${d.fileName}?authToken=${token}`});
 
     }).catch((e)=>{
         res.status(404).json({'Message': `${e}`})

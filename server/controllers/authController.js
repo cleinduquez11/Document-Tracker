@@ -4,22 +4,11 @@ const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const secret_key = process.env.SECRET_ACCESS_TOKEN;
 const User = require('../models/userModel');
-// const Users = [
-//     {
-//         username: "admin",
-//         password: "admin"
-//     },
-//     {
-//         username: "Winslee",
-//         password: "0427"
-//     },
 
-// ]
 function Authenticate(req, res) {
     const {user, pass } = req.body;
-    // console.log(req)
     User.where({username: user, password:pass}).then((u)=> {
-            // console.log(u)
+  
 
             let uSer = _.find(u, (user)=>{
                 if(user.username){
@@ -35,13 +24,17 @@ function Authenticate(req, res) {
                     password: u.password
                 },
                 secret_key
+                ,
+                {expiresIn: '24h'}
             
                 )
+
+                User.findByIdAndUpdate(uSer._id, {accessToken: accessToken});
             
-                 res.status(200).json({"message": "You are now Authenticated",u, "Access Token" : accessToken});
+                 res.status(200).json({"message": "You are now Authenticated",u, "AccessToken" : accessToken});
             }
             else {
-                res.status(401).json("You are not Authenticated");
+                res.status(401).json({"message":"You are not Authenticated"});
             }
        
            
@@ -52,32 +45,7 @@ function Authenticate(req, res) {
         res.status(401).json("You are not Authenticated");
     })
    
-    // let uSer = _.find(Users, (u)=>{
-    //   if(u.username == user && u.password == pass){
-        
-    //    return u
-    //   }
-    // });
 
-    // if (!uSer) {
-
-    //     res.status(401).json("You are not Authenticated");
-    // }
-    // else {
-    //    const accessToken =  jwt.sign({
-    //         username: uSer.username,
-    //         password: uSer.password
-    //     },
-    //     secret_key
-    
-    //     )
-    
-    //      res.status(200).json({"message": "You are now Authenticated",uSer, "Access Token" : accessToken});
-        
-    // }
-
-    
-// res.sendFile(path.join(__dirname+'/Public/upload.html'));
 
 }
 

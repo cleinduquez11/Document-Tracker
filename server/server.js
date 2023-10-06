@@ -32,8 +32,15 @@ try {
 if (mongoose.ConnectionStates.connected) {
     console.log('MongoDB is Connected');
 } else {
+    try {
+        mongoose.connect(uri);
+    } catch (error) {
+        console.log(error)
+    }
+    
     console.log('MongoDB is not Connected');
 }
+
  app.use('/auth', authRouter);
  app.use('/docs' , Verify, docRouter);
  app.use( '/static', AuthStorage, express.static(__dirname + '/storage'));
