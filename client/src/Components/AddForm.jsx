@@ -74,6 +74,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
           setFileValue(null);
           setFile(null);
           setFilename("");
+          // window.location.reload();
         })
         .catch((e) => {
           setTimeout(handleOpen(SlideTransition, e, "error"));
