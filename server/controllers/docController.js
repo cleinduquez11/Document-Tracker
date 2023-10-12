@@ -50,8 +50,28 @@ function Add(req, res) {
 //Get all the Documents
 //Route GET /docs
 function GetAllDocuments(req, res) {
-    Document.find({}).then((doc)=>{
+    Document.find({}).sort({ createdAt: 'desc' }).then((doc)=>{
         res.status(200).json(doc);
+
+    }).catch((e)=>{
+        res.status(404).json({'Message': `${e}`})
+    })
+
+  
+
+
+}
+
+function findDocument(req, res) {
+    const {search} = req.body;
+
+  
+    Document.find({docName: search}).sort({ createdAt: 'desc' }).then((doc)=>{
+    
+            res.status(200).json(doc);
+    
+
+       
 
     }).catch((e)=>{
         res.status(404).json({'Message': `${e}`})
@@ -145,4 +165,4 @@ function viewDocument(req, res) {
 
 }
 
-module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument}
+module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument, findDocument}

@@ -1,5 +1,5 @@
 const express = require('express');
-const { Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument } = require('../controllers/docController');
+const { Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument, findDocument } = require('../controllers/docController');
 const { upload } = require('../middleware/upload');
 const router = express.Router();
 
@@ -13,6 +13,10 @@ router.route('/')
 
 router.route('/views')
 .post(viewDocument)
+
+
+router.route('/search')
+.post(findDocument)
 
 
 
