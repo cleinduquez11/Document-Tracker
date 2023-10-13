@@ -83,33 +83,32 @@ function findDocument(req, res) {
 }
 
 function UpdateDocument(req, res) {
-    const{ItemID, Name, Description, fileName} = req.body;
-    const{UNIQUESUFFIX} = req;
-    const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
-    console.log(req)
-if (!UNIQUESUFFIX) {
-        return;
-}
-else {
-    Document.findById(ItemID).then((doc)=>
-    fs.unlink(doc.fileLink, function (err) {
-        if (err) throw err;
-        console.log('File deleted!');
-      })
+    const{ItemID, Name, Description} = req.body;
+    // const{UNIQUESUFFIX} = req;
+    // const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
+    // console.log(req)
+
+    // Document.findById(ItemID).then((doc)=>{
+    //     fs.unlink(doc.fileLink, function (err) {
+    //         if (err) throw err;
+    //         console.log('File deleted!');
+    //       })
+    // }
+//  console.log(req)
     
-    ).catch((e)=>{
-        res.status(404).json({'Message': `${e}`})
-    });
-}
+    // ).catch((e)=>{
+    //     res.status(404).json({'Message': `${e}`})
+    // });
+
  
     Document.findByIdAndUpdate(ItemID,
         
         
         { 
             docName: Name,
-            docDescription: Description,
-            fileName: UNIQUESUFFIX,
-            fileLink:FileLink
+            docDescription: Description
+            // fileName: UNIQUESUFFIX,
+            // fileLink:FileLink
         
         }).then(()=>{
         res.status(200).json({'Message': "Updated"});

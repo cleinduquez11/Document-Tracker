@@ -46,12 +46,17 @@ async function addDocuments(formData, token) {
   }
 
 
-  async function updateDocuments(formData, token) {
+  async function updateDocuments(id, name, description, token) {
     try {
       const response = await fetch(`http://localhost:5000/docs`, {
         method: "PATCH",
-        body:formData,
+        body: JSON.stringify({
+          "ItemID":id,
+          "Name": name,
+        "Description":description
+        }),
         headers: {
+          'Content-Type': 'application/json',
           Authorization:
             "Bearer " +
             token,

@@ -29,6 +29,8 @@ import {
 } from "@mui/material";
 import { Delete, Edit, FileCopy, SearchOff } from "@mui/icons-material";
 import Update from "./UpdateDoc";
+import { useDispatch, useSelector } from "react-redux";
+import { refetch } from "../Provider/Refetch/refetchSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -79,6 +81,8 @@ function SlideTransition(props) {
 const UsingFetch = ({ clicked }) => {
   // console.log(clicked);
   const token = localStorage?.getItem("token");
+  const dispatch = useDispatch();
+  const toggled = useSelector((state) => state.refetch.refetch);
   // const isClicked = localStorage.getItem("submitted");
   // console.log(isClicked);
   const [state, setState] = React.useState({
@@ -131,7 +135,7 @@ const UsingFetch = ({ clicked }) => {
 
   React.useEffect(() => {
     fetchData();
-  });
+  }, [toggled]);
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
   const nPages = Math.ceil(data.length / recordsPerPage);
@@ -193,7 +197,7 @@ const UsingFetch = ({ clicked }) => {
             }}
           >
             {docs == ""
-              ? data.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
+              ? data?.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
                   <>
                     <Box
                       sx={{
@@ -217,6 +221,7 @@ const UsingFetch = ({ clicked }) => {
                               //   key={d._id}
                               onClick={() => {
                                 setItem(d);
+                                console.log(d);
                                 handleClickOpen();
                               }}
                               edge="end"
@@ -255,6 +260,7 @@ const UsingFetch = ({ clicked }) => {
                                             "success"
                                           )
                                         );
+                                        dispatch(refetch());
                                       }
 
                                       // console.log(res.Message);
@@ -314,7 +320,7 @@ const UsingFetch = ({ clicked }) => {
                     <br />
                   </>
                 ))
-              : docs.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
+              : docs?.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
                   <>
                     <Box
                       sx={{
@@ -376,6 +382,7 @@ const UsingFetch = ({ clicked }) => {
                                             "success"
                                           )
                                         );
+                                        dispatch(refetch());
                                       }
 
                                       // console.log(res.Message);
