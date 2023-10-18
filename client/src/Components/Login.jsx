@@ -56,8 +56,10 @@ export default function Login() {
       // localStorage.setItem("token", res.AccessToken);
       // window.location.reload();
       console.log(res);
-      if (res.u) {
+      if (res._id) {
         localStorage.setItem("token", res.AccessToken);
+        localStorage.setItem("refreshtoken", res.RefreshToken);
+        localStorage.setItem("userId", res._id);
         window.location.reload();
         // navigate("/home", { replace: true });
         setTimeout(handleOpen(SlideTransition, res.message, "success"));

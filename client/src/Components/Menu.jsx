@@ -26,8 +26,10 @@ import {
 
 import { Logout, Settings, PersonAdd } from "@mui/icons-material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { logout } from "../Querries/querries";
 
 export default function AccountMenu() {
+  const id = localStorage?.getItem("userId");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -37,6 +39,8 @@ export default function AccountMenu() {
     setAnchorEl(null);
   };
   const handleLogout = () => {
+    logout(id);
+    localStorage.setItem("refreshtoken", "");
     localStorage.setItem("token", "");
     window.location.reload();
   };

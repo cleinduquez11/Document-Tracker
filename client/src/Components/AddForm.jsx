@@ -40,6 +40,7 @@ const VisuallyHiddenInput = styled("input")({
 const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
   const dispatch = useDispatch();
   const token = localStorage?.getItem("token");
+  const refresh = localStorage?.getItem("refreshtoken");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
@@ -49,11 +50,13 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
 
   function onSubmit(e) {
     e.preventDefault();
+    console.log(name, description, file);
     const validatedData = validate(name, description, file);
     if (validatedData.Status) {
       let result = addDocuments(
         formdata(name, description, file, filename),
-        token
+        token,
+        refresh
       );
       // setClicked((previous) => {
       //   previous = !previous;

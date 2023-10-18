@@ -1,5 +1,6 @@
-const jwt = require('jsonwebtoken');
 require("dotenv").config();
+const jwt = require('jsonwebtoken');
+
 const Secret_AccessToken = process.env.SECRET_ACCESS_TOKEN;
 
 const  Verify = (req,res,next) => {
@@ -9,7 +10,7 @@ const  Verify = (req,res,next) => {
 
             jwt.verify(token, Secret_AccessToken, (err,User)=>{
                     if(err){
-                        return res.status(403).json("Token is not Valid");
+                        return res.status(403).json({"status": 403, "message":"Token is not Valid"});
                     }
                     else {
                        

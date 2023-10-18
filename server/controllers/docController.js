@@ -13,6 +13,7 @@ const fs = require('fs');
 function Add(req, res) {
     const {Name, Description } = req.body;
     const {UNIQUESUFFIX} = req;
+    console.log(req);
 
     const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
     if(!Name || !Description || !UNIQUESUFFIX ){
@@ -149,7 +150,9 @@ function deleteDocument(req, res) {
 }
 
 function viewDocument(req, res) {
-    const{id, token} = req.body;
+    const{id} = req.body;
+    const authHeader = req.headers.authorization;
+    const token = authHeader.split(" ")[1];
     // console.log(req)
     Document.findById(id).then((d)=>{
         // res.sendFile(path.join(__dirname + '../' + '/storage/' + d.fileName));

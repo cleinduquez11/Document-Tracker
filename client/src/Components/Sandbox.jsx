@@ -81,6 +81,7 @@ function SlideTransition(props) {
 const UsingFetch = ({ clicked }) => {
   // console.log(clicked);
   const token = localStorage?.getItem("token");
+  const refresh = localStorage?.getItem("refreshtoken");
   const dispatch = useDispatch();
   const toggled = useSelector((state) => state.refetch.refetch);
   // const isClicked = localStorage.getItem("submitted");
@@ -128,7 +129,8 @@ const UsingFetch = ({ clicked }) => {
   const [recordsPerPage] = React.useState(5);
 
   const fetchData = () => {
-    getAllDocuments(token).then((data) => {
+    getAllDocuments(token, refresh).then((data) => {
+      // console.log(data);
       setData(data);
     });
   };
@@ -145,7 +147,7 @@ const UsingFetch = ({ clicked }) => {
   };
 
   const searchData = (search) => {
-    findDocument(search, token).then((docs) => {
+    findDocument(search, token, refresh).then((docs) => {
       setDocs(docs);
     });
   };
@@ -240,7 +242,11 @@ const UsingFetch = ({ clicked }) => {
                             <IconButton
                               onClick={() => {
                                 //  console.log(d._id);
-                                let result = deleteDocuments(d._id, token);
+                                let result = deleteDocuments(
+                                  d._id,
+                                  token,
+                                  refresh
+                                );
                                 result
                                   .then((res) => {
                                     if (res) {
@@ -295,11 +301,11 @@ const UsingFetch = ({ clicked }) => {
 
                         <Box
                           onClick={() => {
-                            let result = viewDocuments(d._id, token);
+                            let result = viewDocuments(d._id, token, refresh);
 
                             result.then((res) => {
                               // setUri(res.FileLink);
-                              // console.log(res);
+                              console.log(res);
                               window.open(res.FileLink);
                             });
                             // console.log(d._id);
