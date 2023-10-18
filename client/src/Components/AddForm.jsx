@@ -18,6 +18,8 @@ import { CloudUpload } from "@mui/icons-material";
 import { addDocuments } from "../Querries/querries";
 import { validate } from "../Utils/Validate";
 import { formdata } from "../Utils/FormData";
+import { useDispatch } from "react-redux";
+import { refetch } from "../Provider/Refetch/refetchSlice";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
@@ -36,6 +38,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
+  const dispatch = useDispatch();
   const token = localStorage?.getItem("token");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -63,6 +66,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
             if (res.Status == 400) {
               setTimeout(handleOpen(SlideTransition, res.Message, "error"));
             } else {
+              dispatch(refetch());
               setTimeout(handleOpen(SlideTransition, res.Message, "success"));
             }
 

@@ -7,7 +7,7 @@ const router = express.Router();
 router.route('/')
 .post(upload.single('uploaded'), Add)
 .get(GetAllDocuments)
-.patch(upload.single('uploaded'),UpdateDocument)
+.patch(UpdateDocument)
 .delete(deleteDocument)
 
 
