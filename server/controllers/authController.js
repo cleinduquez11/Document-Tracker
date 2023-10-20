@@ -3,13 +3,14 @@ const json = require('json')
 const _ = require('lodash')
 const jwt = require('jsonwebtoken')
 const secret_key = process.env.SECRET_ACCESS_TOKEN;
+const refresh_secret_key = process.env.SECRET_ACCESS_TOKEN_REFRESH;
 const User = require('../models/userModel');
 
 function Authenticate(req, res) {
     const {user, pass } = req.body;
-    User.where({username: user, password:pass}).then((u)=> {
+    User.where({"username": user, "password":pass}).then((u)=> {
   
-
+           
             let uSer = _.find(u, (user)=>{
                 if(user.username){
                   
@@ -17,21 +18,30 @@ function Authenticate(req, res) {
                 }
               });
           
-
             if (uSer) {
                 const accessToken =  jwt.sign({
-                    username: u.username,
-                    password: u.password
+                    username: uSer.username,
                 },
                 secret_key
                 ,
-                {expiresIn: '24h'}
+                {expiresIn: '60s'}
             
-                )
+                );
 
-                User.findByIdAndUpdate(uSer._id, {accessToken: accessToken});
+                const refreshToken =  jwt.sign({
+                    username: uSer.username,
+                },
+                refresh_secret_key
+                ,
+                 {expiresIn: '24h'}
             
-                 res.status(200).json({"message": "You are now Authenticated",u, "AccessToken" : accessToken});
+                );
+
+                User.findByIdAndUpdate(uSer._id ,{$push:{"refreshTokens":  refreshToken }}).then(()=>{
+                    res.status(200).json({"message": "You are now Authenticated","_id": uSer._id, "username":uSer.username, "isAdmin": uSer.isAdmin,"AccessToken" : accessToken, "RefreshToken":refreshToken});
+                });
+            
+                
             }
             else {
                 res.status(401).json({"message":"You are not Authenticated"});
@@ -42,7 +52,7 @@ function Authenticate(req, res) {
          
      
     }).catch((e)=>{
-        res.status(401).json("You are not Authenticated");
+        res.status(401).json({"message": "You are not Authenticated", "error": e});
     })
    
 
@@ -50,4 +60,49 @@ function Authenticate(req, res) {
 }
 
 
-module.exports = { Authenticate}
+async function RefreshToken(req, res) {
+    const {refreshtoken} = req.body;
+
+    try {
+       const user = await User.where({"refreshTokens": refreshtoken});
+
+       if(user){
+        const accessToken =  jwt.sign({
+            username: user.username,
+        },
+        secret_key
+        ,
+        {expiresIn: '60s'}
+    
+        );
+
+    res.status(200).json({"message": "You are now Authenticated",
+        "_id": user._id, 
+        "username":user.username, 
+        "isAdmin": user.isAdmin,
+        "AccessToken" : accessToken});
+       }
+    } catch (error) {
+        res.status(401).json({"message":"You are not Authenticated"});
+    }
+
+}
+
+
+async function Logout(req, res){
+    const {id, refreshtoken } = req.query;
+
+    try {
+        const logOutUser = await User.findByIdAndUpdate(id, {$pull:{"refreshTokens": refreshtoken}});
+        if (logOutUser) {
+            res.status(200).json({"message":"Successfully Logged Out"});
+        }
+    } catch (error) {
+        res.status(404).json({"message":"Error"});
+    }
+
+   
+}
+
+
+module.exports = { Authenticate, RefreshToken, Logout}

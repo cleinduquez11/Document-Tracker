@@ -1,32 +1,25 @@
+import { JSONQueryWithAutoRefresh, MULTIPARTQueryWithAutoRefresh} from "./AutoRefresh";
 
-async function addDocuments(formData, token) {
-    try {
-      const response = await fetch("http://localhost:5000/docs", {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization:
-            "Bearer " +
-            token,
-       
-       
-        },
-      });
-      const result = await response.json();
-      return result;
 
-    } catch (error) {
-      console.log("Error:", error);
-    }
+const url = 'http://10.10.10.125:5000'
+
+async function addDocuments(formData,token,refresh) {
+  const res = await MULTIPARTQueryWithAutoRefresh(`${url}/docs`,
+    "POST", 
+    token,
+     refresh,
+      formData
+  );
+
+  return res;
+
   }
 
 
-  async function login(user,pass) {
+async function login(user,pass) {
     try {
-      const response = await fetch("http://localhost:5000/auth", {
-
+      const response = await fetch(`${url}/auth`, {
         method: "POST",
-        
         body: JSON.stringify({
           "user": user,
           "pass": pass
@@ -46,46 +39,35 @@ async function addDocuments(formData, token) {
   }
 
 
-  async function updateDocuments(id, name, description, token) {
-    try {
-      const response = await fetch(`http://localhost:5000/docs`, {
-        method: "PATCH",
-        body: JSON.stringify({
-          "ItemID":id,
-          "Name": name,
-        "Description":description
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            "Bearer " +
-            token,
-       
-       
-        },
-      });
-      const result = await response.json();
-      return result;
+async function updateDocuments(id, name, description, token, refresh) {
+    const res = JSONQueryWithAutoRefresh(`${url}/docs`, 
+    "PATCH",
+    token,
+     refresh,
+     JSON.stringify({
+      "ItemID":id,
+      "Name": name,
+    "Description":description
+    }));
 
-
-
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    return res;
+   
   }
 
 
-  async function deleteDocuments(id, token) {
+  async function deleteDocuments(id, token,refresh) {
+
+    const res = MULTIPARTQueryWithAutoRefresh(`${url}/docs?id=${id}`,"DELETE", token, refresh, null);
+
+    return res;
+   
+  }
+
+
+async function logout(id, refresh) {
     try {
-      const response = await fetch(`http://localhost:5000/docs?id=${id}`, {
+      const response = await fetch(`${url}/auth/logout?id=${id}&refreshtoken=${refresh}`, {
         method: "DELETE",
-        headers: {
-          Authorization:
-            "Bearer " +
-            token,
-       
-       
-        },
       });
       const result = await response.json();
       return result;
@@ -98,80 +80,49 @@ async function addDocuments(formData, token) {
 
 
 
-  async function viewDocuments(id,token) {
-    try {
-      const response = await fetch(`http://localhost:5000/docs/views`, {
-        method: "POST",
-        body: JSON.stringify({
-          "id": id,
-          "token": token
-      
-      }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            "Bearer " +
-            token,
-       
-       
-        },
-      });
-      const result = await response.json();
-      return result;
+async function viewDocuments(id,token, refresh) {
+    const res = await JSONQueryWithAutoRefresh(`${url}/docs/views`,
+    "POST", 
+    token,
+     refresh,
+     JSON.stringify({
+      "id": id
+  }),
 
-
-
-    } catch (error) {
-      console.log("Error:", error);
-    }
+ 
+  );
+  return res;
+   
   }
 
 
 
 
-async function getAllDocuments(token) {
-    try {
-      const response = await fetch("http://localhost:5000/docs", {
-        method: "GET",
-        headers: {
-         
-          Authorization:
-            "Bearer " +
-            token,
-        },
-      });
-      const result = await response.json();
-      return result;
+async function getAllDocuments(token, refresh) {
 
-    } catch (error) {
-      console.log("Error:", error);
-    }
+ const res = await JSONQueryWithAutoRefresh(`${url}/docs`,
+ "GET", 
+ token,
+ refresh,null);
+
+ return res;
+
   }
 
-  async function findDocument(search, token) {
-    try {
-      const response = await fetch("http://localhost:5000/docs/search", {
-        method: "POST",
-        body: JSON.stringify({
-          "search": search,
-       
-      
-      }),
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            "Bearer " +
-            token,
-        },
-      });
-      const result = await response.json();
-      return result;
+async function findDocument(search, token, refresh) {
 
-    } catch (error) {
-      console.log("Error:", error);
-    }
+const res = JSONQueryWithAutoRefresh(`${url}/docs/search`,
+    "POST",
+    token, 
+    refresh,
+    JSON.stringify({
+      "search": search,
+  }));
+
+  return res;
+   
   }
 
 
 
-  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments, login, findDocument}
+  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments, login, findDocument, logout}

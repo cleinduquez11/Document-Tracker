@@ -1,7 +1,6 @@
 import * as React from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
@@ -61,7 +60,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -78,18 +76,23 @@ function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
 }
 
-const UsingFetch = ({ clicked }) => {
-  // console.log(clicked);
+export default function Sandbox() {
   const token = localStorage?.getItem("token");
+  const refresh = localStorage?.getItem("refreshtoken");
+  const [data, setData] = React.useState([]);
+  const [docs, setDocs] = React.useState("");
+  const [item, setItem] = React.useState({});
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [recordsPerPage] = React.useState(5);
+  const [open, setOpen] = React.useState(false);
+
   const dispatch = useDispatch();
   const toggled = useSelector((state) => state.refetch.refetch);
-  // const isClicked = localStorage.getItem("submitted");
-  // console.log(isClicked);
   const [state, setState] = React.useState({
     open: false,
     Transition: Fade,
   });
-  // console.log(token);
+
   const handleOpen = (Transition, message, status) => () => {
     setState({
       open: true,
@@ -105,7 +108,6 @@ const UsingFetch = ({ clicked }) => {
       open: false,
     });
   };
-  const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -115,20 +117,8 @@ const UsingFetch = ({ clicked }) => {
     setOpen(false);
   };
 
-  // const deleteItem = () => {};
-
-  const [data, setData] = React.useState([]);
-  const [docs, setDocs] = React.useState("");
-
-  const [item, setItem] = React.useState({});
-  const [uri, setUri] = React.useState([
-    "http://localhost:5000/static/1696566736510-Intern-NDA-Template.docx?authToken=123",
-  ]);
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [recordsPerPage] = React.useState(5);
-
   const fetchData = () => {
-    getAllDocuments(token).then((data) => {
+    getAllDocuments(token, refresh).then((data) => {
       setData(data);
     });
   };
@@ -145,16 +135,37 @@ const UsingFetch = ({ clicked }) => {
   };
 
   const searchData = (search) => {
-    findDocument(search, token).then((docs) => {
+    findDocument(search, token, refresh).then((docs) => {
       setDocs(docs);
     });
+  };
+
+  const viewDoc = async (id) => {
+    let { FileLink } = await viewDocuments(id, token, refresh);
+    if (FileLink) {
+      window.open(FileLink);
+    }
+  };
+
+  const deleteDoc = async (id) => {
+    let { Status, Message } = await deleteDocuments(id, token, refresh);
+
+    if (Status && Message) {
+      if (Status == 400) {
+        setTimeout(handleOpen(SlideTransition, Message, "error"));
+      } else {
+        setTimeout(handleOpen(SlideTransition, Message, "success"));
+        dispatch(refetch());
+      }
+    } else {
+      setTimeout(handleOpen(SlideTransition, Message, "error"));
+    }
   };
 
   return (
     <>
       <Paper
         elevation={24}
-        // bgcolor="inherit"
         sx={{
           bgcolor: "inherit",
           width: "100%",
@@ -169,8 +180,6 @@ const UsingFetch = ({ clicked }) => {
             textAlign="start"
             p={2}
             color="white"
-            // bgcolor="inherit"
-            // bgcolor="#CCC7BF"
           >
             Documents
           </Typography>
@@ -182,7 +191,6 @@ const UsingFetch = ({ clicked }) => {
             <StyledInputBase
               onChange={(e) => {
                 searchData(e.target.value);
-                //console.log(e.target.value);
               }}
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
@@ -208,17 +216,13 @@ const UsingFetch = ({ clicked }) => {
                     >
                       <ListItem
                         sx={{
-                          // bgcolor: "#CCC7BF",
                           bgcolor: "inherit",
                           color: "white",
                         }}
-                        key={d._id}
-                        // onDoubleClick={() => {}}
-                        // onClick={handleClickOpen}
+                        key={d._id.toString()}
                         secondaryAction={
                           <>
                             <IconButton
-                              //   key={d._id}
                               onClick={() => {
                                 setItem(d);
                                 console.log(d);
@@ -239,38 +243,7 @@ const UsingFetch = ({ clicked }) => {
                             &#160; &#160; &#160;
                             <IconButton
                               onClick={() => {
-                                //  console.log(d._id);
-                                let result = deleteDocuments(d._id, token);
-                                result
-                                  .then((res) => {
-                                    if (res) {
-                                      if (res.Status == 400) {
-                                        setTimeout(
-                                          handleOpen(
-                                            SlideTransition,
-                                            res.Message,
-                                            "error"
-                                          )
-                                        );
-                                      } else {
-                                        setTimeout(
-                                          handleOpen(
-                                            SlideTransition,
-                                            res.Message,
-                                            "success"
-                                          )
-                                        );
-                                        dispatch(refetch());
-                                      }
-
-                                      // console.log(res.Message);
-                                    }
-                                  })
-                                  .catch((e) => {
-                                    setTimeout(
-                                      handleOpen(SlideTransition, e, "error")
-                                    );
-                                  });
+                                deleteDoc(d._id);
                               }}
                               edge="end"
                               aria-label="Edit"
@@ -294,25 +267,13 @@ const UsingFetch = ({ clicked }) => {
                         </ListItemAvatar>
 
                         <Box
-                          onClick={() => {
-                            let result = viewDocuments(d._id, token);
-
-                            result.then((res) => {
-                              // setUri(res.FileLink);
-                              // console.log(res);
-                              window.open(res.FileLink);
-                            });
-                            // console.log(d._id);
-                          }}
+                          onClick={() => viewDoc(d._id)}
                           sx={{
                             width: "85%",
                           }}
                         >
                           {" "}
-                          <ListItemText
-                            primary={d.docName}
-                            // secondary={d.docDescription}
-                          />
+                          <ListItemText primary={d.docName} />
                         </Box>
                       </ListItem>
                     </Box>
@@ -331,17 +292,13 @@ const UsingFetch = ({ clicked }) => {
                     >
                       <ListItem
                         sx={{
-                          // bgcolor: "#CCC7BF",
                           bgcolor: "inherit",
                           color: "white",
                         }}
-                        key={d._id}
-                        // onDoubleClick={() => {}}
-                        // onClick={handleClickOpen}
+                        key={d._id.toString()}
                         secondaryAction={
                           <>
                             <IconButton
-                              //   key={d._id}
                               onClick={() => {
                                 setItem(d);
                                 handleClickOpen();
@@ -361,38 +318,7 @@ const UsingFetch = ({ clicked }) => {
                             &#160; &#160; &#160;
                             <IconButton
                               onClick={() => {
-                                //  console.log(d._id);
-                                let result = deleteDocuments(d._id, token);
-                                result
-                                  .then((res) => {
-                                    if (res) {
-                                      if (res.Status == 400) {
-                                        setTimeout(
-                                          handleOpen(
-                                            SlideTransition,
-                                            res.Message,
-                                            "error"
-                                          )
-                                        );
-                                      } else {
-                                        setTimeout(
-                                          handleOpen(
-                                            SlideTransition,
-                                            res.Message,
-                                            "success"
-                                          )
-                                        );
-                                        dispatch(refetch());
-                                      }
-
-                                      // console.log(res.Message);
-                                    }
-                                  })
-                                  .catch((e) => {
-                                    setTimeout(
-                                      handleOpen(SlideTransition, e, "error")
-                                    );
-                                  });
+                                deleteDoc(d._id);
                               }}
                               edge="end"
                               aria-label="Edit"
@@ -417,24 +343,14 @@ const UsingFetch = ({ clicked }) => {
 
                         <Box
                           onClick={() => {
-                            let result = viewDocuments(d._id, token);
-
-                            result.then((res) => {
-                              // setUri(res.FileLink);
-                              // console.log(res);
-                              window.open(res.FileLink);
-                            });
-                            // console.log(d._id);
+                            viewDoc(d._id);
                           }}
                           sx={{
                             width: "85%",
                           }}
                         >
                           {" "}
-                          <ListItemText
-                            primary={d.docName}
-                            // secondary={d.docDescription}
-                          />
+                          <ListItemText primary={d.docName} />
                         </Box>
                       </ListItem>
                     </Box>
@@ -445,19 +361,16 @@ const UsingFetch = ({ clicked }) => {
           </List>
 
           <Pagination
-            // variant="outlined"
             size="small"
             style={{
               paddingTop: "3px",
-              // paddingBottom: "8px",
-              // accentColor: "white",
+
               background: "#f2f2f2",
               color: "white",
             }}
-            // color="light"
             count={nPages}
             onChange={handleChange}
-            currentPage={currentPage}
+            currentpage={currentPage}
           />
         </Stack>
       </Paper>
@@ -469,7 +382,6 @@ const UsingFetch = ({ clicked }) => {
         formTitle="Edit"
         item={item}
       />
-      {/* <Viewer /> */}
 
       <Snackbar
         open={state.open}
@@ -479,7 +391,6 @@ const UsingFetch = ({ clicked }) => {
         TransitionComponent={state.Transition}
         message={state.message}
         key={state.Transition.name}
-        // onClick={handleclickopen}
       >
         <Alert
           onClose={handleRemove}
@@ -491,44 +402,4 @@ const UsingFetch = ({ clicked }) => {
       </Snackbar>
     </>
   );
-};
-
-export default UsingFetch;
-{
-  /* <ListItem
-secondaryAction={
-  <IconButton edge="end" aria-label="delete">
-    <DeleteIcon />
-  </IconButton>
-}
-> */
-}
-
-{
-  /* <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-<ListItem>
-  <ListItemAvatar>
-    <Avatar>
-      <ImageIcon />
-    </Avatar>
-  </ListItemAvatar>
-  <ListItemText primary="Photos" secondary="Jan 9, 2014" />
-</ListItem>
-<ListItem>
-  <ListItemAvatar>
-    <Avatar>
-      <WorkIcon />
-    </Avatar>
-  </ListItemAvatar>
-  <ListItemText primary="Work" secondary="Jan 7, 2014" />
-</ListItem>
-<ListItem>
-  <ListItemAvatar>
-    <Avatar>
-      <BeachAccessIcon />
-    </Avatar>
-  </ListItemAvatar>
-  <ListItemText primary="Vacation" secondary="July 20, 2014" />
-</ListItem>
-</List> */
 }

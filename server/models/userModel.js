@@ -20,8 +20,16 @@ isAdmin:{
     type: Boolean,
 },
 accessToken:{
-    type: String
+    type: String,
+},
+refreshToken:{
+    type:String,
+},
+refreshTokens:{
+    type: Array,
+    default:[""]
 }
+
 
 },
 {

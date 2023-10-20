@@ -6,10 +6,6 @@ import Notification from "./Notification";
 
 import AddForm from "./AddForm";
 
-// const Transition = forwardRef(function Transition(props, ref) {
-//   return <Slide direction="up" ref={ref} {...props} />;
-// });
-
 export default function AddDoc({
   open,
   handleclose,
@@ -39,7 +35,6 @@ export default function AddDoc({
 
   return (
     <>
-      {/* Form */}
       <AddForm
         formTitle="Add document"
         open={open}
@@ -47,7 +42,7 @@ export default function AddDoc({
         handleOpen={handleOpen}
         handleClick={handleClick}
       />
-      {/* Notifications */}
+
       <Notification
         state={state}
         handleremove={handleRemove}

@@ -1,6 +1,6 @@
 import { Alert, Snackbar } from "@mui/material";
 
-const Notification = ({ state, handleremove, handleclickopen }) => {
+export default function Notification({ state, handleremove, handleclickopen }) {
   return (
     <>
       <Snackbar
@@ -23,6 +23,4 @@ const Notification = ({ state, handleremove, handleclickopen }) => {
       </Snackbar>
     </>
   );
-};
-
-export default Notification;
+}

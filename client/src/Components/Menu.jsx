@@ -1,20 +1,6 @@
 import * as React from "react";
-// import Box from '@mui/material/Box';
-// import Avatar from '@mui/material/Avatar';
-// import Menu from '@mui/material/Menu';
-// import MenuItem from '@mui/material/MenuItem';
-// import ListItemIcon from '@mui/material/ListItemIcon';
-// import Divider from '@mui/material/Divider';
-// import IconButton from '@mui/material/IconButton';
-// import Typography from '@mui/material/Typography';
-// import Tooltip from '@mui/material/Tooltip';
-// import PersonAdd from '@mui/icons-material/PersonAdd';
-// import Settings from '@mui/icons-material/Settings';
-// import Logout from '@mui/icons-material/Logout';
-
 import {
   Tooltip,
-  Typography,
   IconButton,
   Divider,
   ListItemIcon,
@@ -25,9 +11,11 @@ import {
 } from "@mui/material";
 
 import { Logout, Settings, PersonAdd } from "@mui/icons-material";
-import MenuIcon from "@mui/icons-material/Menu";
+import { logout } from "../Querries/querries";
 
 export default function AccountMenu() {
+  const id = localStorage?.getItem("userId");
+  const refresh = localStorage?.getItem("refreshtoken");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -37,14 +25,14 @@ export default function AccountMenu() {
     setAnchorEl(null);
   };
   const handleLogout = () => {
+    logout(id, refresh);
+    localStorage.setItem("refreshtoken", "");
     localStorage.setItem("token", "");
     window.location.reload();
   };
   return (
     <React.Fragment>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
-        {/* <Typography sx={{ minWidth: 100 }}>Contact</Typography>
-        <Typography sx={{ minWidth: 100 }}>Profile</Typography> */}
         <Tooltip title="Account settings">
           <IconButton
             onClick={handleClick}
@@ -54,9 +42,7 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            {/* <MenuIcon /> */}
             <Avatar />
-            {/* <Avatar sx={{ width: 32, height: 32 }}>U</Avatar> */}
           </IconButton>
         </Tooltip>
       </Box>

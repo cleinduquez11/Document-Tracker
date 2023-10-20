@@ -6,18 +6,13 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Input,
   Paper,
   Slide,
   TextField,
   Typography,
 } from "@mui/material";
 
-import styled from "@emotion/styled";
-import { CloudUpload } from "@mui/icons-material";
 import { updateDocuments } from "../Querries/querries";
-import { validate, validateUpdate } from "../Utils/Validate";
-import { updateformdata } from "../Utils/FormData";
 import { useDispatch } from "react-redux";
 import { refetch } from "../Provider/Refetch/refetchSlice";
 
@@ -25,35 +20,23 @@ function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
 }
 
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
-
-const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
+export default function UpdateForm({
+  open,
+  handleclose,
+  formTitle,
+  handleOpen,
+  item,
+}) {
   const token = localStorage?.getItem("token");
-  // console.log("qewqeqw");
+  const refresh = localStorage?.getItem("refreshtoken");
   const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [file, setFile] = useState("");
-  const [filename, setFilename] = useState("");
-  const [fileValue, setFileValue] = useState("");
 
   function onSubmit(e) {
     e.preventDefault();
 
-    // console.log(name, description);
-    // const validatedData = validateUpdate(name, description, file);
-    // if (validatedData.Status) {
-    updateDocuments(item._id, name, description, token)
+    updateDocuments(item._id, name, description, token, refresh)
       .then((res) => {
         handleclose();
         if (res) {
@@ -63,48 +46,14 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
             setTimeout(handleOpen(SlideTransition, res.Message, "success"));
             dispatch(refetch());
           }
-          // console.log(res.Message);
         }
 
         setName("");
         setDescription("");
-        setFileValue(null);
-        setFile(null);
-        setFilename("");
       })
       .catch((e) => {
         setTimeout(handleOpen(SlideTransition, e, "error"));
       });
-
-    // console.log(result);
-    // result
-    //   .then((res) => {
-    //     handleclose();
-    //     if (res) {
-    //       if (res.Status == 400) {
-    //         setTimeout(handleOpen(SlideTransition, res.Message, "error"));
-    //       } else {
-    //         setTimeout(handleOpen(SlideTransition, res.Message, "success"));
-    //         // dispatch(refetch());
-    //       }
-    //       console.log(res.Message);
-    //     }
-
-    //     setName("");
-    //     setDescription("");
-    //     setFileValue(null);
-    //     setFile(null);
-    //     setFilename("");
-    //   })
-    //   .catch((e) => {
-    //     setTimeout(handleOpen(SlideTransition, e, "error"));
-    //   });
-    // // } else {
-    // //   handleclose();
-    // //   setTimeout(handleOpen(SlideTransition, validatedData.Message, "error"));
-    // // }
-
-    // // console.log(qqweqwe);
   }
 
   return (
@@ -137,8 +86,6 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
               sx={{
                 width: "270px",
                 overflow: "hidden",
-                // paddingLeft: "20px",
-                // paddingRight: "20px",
                 marginTop: "40px ",
               }}
             >
@@ -147,21 +94,17 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
                 component="form"
                 sx={{
                   padding: "20px",
-                  // gap: "20px",
+
                   textAlign: "center",
                 }}
               >
-                {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
-
                 <TextField
-                  // ref={name}
                   variant="outlined"
                   label={"Document Name"}
                   type="text"
                   name=""
                   id=""
                   value={name}
-                  // defaultValue={item.docName}
                   placeholder={item.docName}
                   onChange={(e) => {
                     e.preventDefault();
@@ -172,7 +115,6 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
                 <br />
 
                 <TextField
-                  // ref={description}
                   variant="outlined"
                   label={"Document Description"}
                   type="text"
@@ -187,33 +129,10 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
                 />
                 <br />
                 <br />
-                {/* <Box>{filename}</Box>
-                  <Button
-                    component="label"
-                    variant="contained"
-                    startIcon={<CloudUpload />}
-                  >
-                    Upload file
-                    <VisuallyHiddenInput
-                      // ref={file}
-                      id="file"
-                      onChange={(e) => {
-                        e.preventDefault();
-                        setFile(e.target.files[0]);
-                        setFilename(e.target.files[0].name);
-                        setFileValue(e.target.value);
-                      }}
-                      type="file"
-                    />
-                  </Button>
-
-                  <br />
-                  <br /> */}
 
                 <Button
                   component="label"
                   variant="contained"
-                  // type="submit"
                   onClick={onSubmit}
                 >
                   Update
@@ -222,17 +141,7 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
             </Box>
           </DialogContentText>
         </DialogContent>
-        {/* <DialogActions>
-              <Button style={{ color: "red" }} onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button style={{ color: "green" }} onClick={handleClose}>
-                Add
-              </Button>
-            </DialogActions> */}
       </Dialog>
     </>
   );
-};
-
-export default UpdateForm;
+}

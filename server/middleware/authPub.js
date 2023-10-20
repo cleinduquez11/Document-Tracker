@@ -4,7 +4,8 @@ const _ = require('lodash');
 const User = require('../models/userModel');
 const json = require('json')
 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const path = require('path');
 const secret_key = process.env.SECRET_ACCESS_TOKEN;
 
 
@@ -40,7 +41,8 @@ if (!authToken) {
 }
     jwt.verify(authToken, secret_key, (err,User)=>{
             if(err){
-                return res.status(403).json("Token is not Valid");
+                return res.sendFile(path.join(__dirname,'../','Views','404.html'))
+                // return res.status(403).json({"status": 403, "message":"Token is not Valid"});
             }
             else {
                
