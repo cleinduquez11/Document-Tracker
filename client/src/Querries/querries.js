@@ -1,3 +1,4 @@
+
 async function addDocuments(formData, token) {
     try {
       const response = await fetch("http://localhost:5000/docs", {
@@ -45,12 +46,17 @@ async function addDocuments(formData, token) {
   }
 
 
-  async function updateDocuments(formData, token) {
+  async function updateDocuments(id, name, description, token) {
     try {
       const response = await fetch(`http://localhost:5000/docs`, {
         method: "PATCH",
-        body:formData,
+        body: JSON.stringify({
+          "ItemID":id,
+          "Name": name,
+        "Description":description
+        }),
         headers: {
+          'Content-Type': 'application/json',
           Authorization:
             "Bearer " +
             token,
@@ -128,6 +134,7 @@ async function getAllDocuments(token) {
       const response = await fetch("http://localhost:5000/docs", {
         method: "GET",
         headers: {
+         
           Authorization:
             "Bearer " +
             token,
@@ -141,4 +148,30 @@ async function getAllDocuments(token) {
     }
   }
 
-  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments, login}
+  async function findDocument(search, token) {
+    try {
+      const response = await fetch("http://localhost:5000/docs/search", {
+        method: "POST",
+        body: JSON.stringify({
+          "search": search,
+       
+      
+      }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization:
+            "Bearer " +
+            token,
+        },
+      });
+      const result = await response.json();
+      return result;
+
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+
+
+  export{addDocuments,getAllDocuments, updateDocuments, deleteDocuments, viewDocuments, login, findDocument}

@@ -25,14 +25,14 @@ return formData;
 
     
 
-function updateformdata(id,name, description,file,filename) {
+function updateformdata(id,name, description) {
     const formData = new FormData();
     formData.append("ItemID", id);
    formData.append("Name", name);
    formData.append("Description", description);
    // console.log(name);
-   formData.append("uploaded", file);
-   formData.append("fileName", filename);
+//    formData.append("uploaded", file);
+//    formData.append("fileName", filename);
 
 return formData;
    }

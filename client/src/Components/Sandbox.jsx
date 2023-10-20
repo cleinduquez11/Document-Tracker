@@ -6,8 +6,10 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
+import SearchIcon from "@mui/icons-material/Search";
 import {
   deleteDocuments,
+  findDocument,
   getAllDocuments,
   viewDocuments,
 } from "../Querries/querries";
@@ -16,12 +18,61 @@ import {
   Box,
   Fade,
   IconButton,
+  InputBase,
+  Pagination,
   Paper,
   Slide,
   Snackbar,
+  Stack,
+  alpha,
+  styled,
 } from "@mui/material";
-import { Delete, Edit, FileCopy } from "@mui/icons-material";
+import { Delete, Edit, FileCopy, SearchOff } from "@mui/icons-material";
 import Update from "./UpdateDoc";
+import { useDispatch, useSelector } from "react-redux";
+import { refetch } from "../Provider/Refetch/refetchSlice";
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(1),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: "inherit",
+  "& .MuiInputBase-input": {
+    padding: theme.spacing(1, 1, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
+      },
+    },
+  },
+}));
 
 function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
@@ -30,6 +81,8 @@ function SlideTransition(props) {
 const UsingFetch = ({ clicked }) => {
   // console.log(clicked);
   const token = localStorage?.getItem("token");
+  const dispatch = useDispatch();
+  const toggled = useSelector((state) => state.refetch.refetch);
   // const isClicked = localStorage.getItem("submitted");
   // console.log(isClicked);
   const [state, setState] = React.useState({
@@ -65,11 +118,14 @@ const UsingFetch = ({ clicked }) => {
   // const deleteItem = () => {};
 
   const [data, setData] = React.useState([]);
+  const [docs, setDocs] = React.useState("");
 
   const [item, setItem] = React.useState({});
   const [uri, setUri] = React.useState([
     "http://localhost:5000/static/1696566736510-Intern-NDA-Template.docx?authToken=123",
   ]);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [recordsPerPage] = React.useState(5);
 
   const fetchData = () => {
     getAllDocuments(token).then((data) => {
@@ -79,21 +135,34 @@ const UsingFetch = ({ clicked }) => {
 
   React.useEffect(() => {
     fetchData();
-  });
+  }, [toggled]);
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const nPages = Math.ceil(data.length / recordsPerPage);
+
+  const handleChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const searchData = (search) => {
+    findDocument(search, token).then((docs) => {
+      setDocs(docs);
+    });
+  };
 
   return (
     <>
-      {data.length > 0 && (
-        <Paper
-          elevation={24}
-          // bgcolor="inherit"
-          sx={{
-            bgcolor: "inherit",
-            width: "100%",
-            overflow: "hidden",
-            justifyContent: "center",
-          }}
-        >
+      <Paper
+        elevation={24}
+        // bgcolor="inherit"
+        sx={{
+          bgcolor: "inherit",
+          width: "100%",
+          overflow: "hidden",
+          justifyContent: "center",
+        }}
+      >
+        <Stack>
           <Typography
             variant="h4"
             component="div"
@@ -105,6 +174,20 @@ const UsingFetch = ({ clicked }) => {
           >
             Documents
           </Typography>
+
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              onChange={(e) => {
+                searchData(e.target.value);
+                //console.log(e.target.value);
+              }}
+              placeholder="Search…"
+              inputProps={{ "aria-label": "search" }}
+            />
+          </Search>
           <List
             sx={{
               justifyContent: "center",
@@ -113,130 +196,271 @@ const UsingFetch = ({ clicked }) => {
               color: "white",
             }}
           >
-            {data.map((d) => (
-              <>
-                <Box
-                  sx={{
-                    "&:hover": {
-                      background: "#CCC7BF",
-                    },
-                  }}
-                >
-                  <ListItem
-                    sx={{
-                      // bgcolor: "#CCC7BF",
-                      bgcolor: "inherit",
-                      color: "white",
-                    }}
-                    key={d._id}
-                    // onDoubleClick={() => {}}
-                    // onClick={handleClickOpen}
-                    secondaryAction={
-                      <>
-                        <IconButton
-                          //   key={d._id}
-                          onClick={() => {
-                            setItem(d);
-                            handleClickOpen();
-                          }}
-                          edge="end"
-                          aria-label="Edit"
-                        >
-                          <Edit
-                            sx={{
-                              "&:hover": {
-                                color: "blue",
-                              },
-                              color: "white",
-                            }}
-                          />
-                        </IconButton>
-                        &#160; &#160; &#160;
-                        <IconButton
-                          onClick={() => {
-                            //  console.log(d._id);
-                            let result = deleteDocuments(d._id, token);
-                            result
-                              .then((res) => {
-                                if (res) {
-                                  if (res.Status == 400) {
-                                    setTimeout(
-                                      handleOpen(
-                                        SlideTransition,
-                                        res.Message,
-                                        "error"
-                                      )
-                                    );
-                                  } else {
-                                    setTimeout(
-                                      handleOpen(
-                                        SlideTransition,
-                                        res.Message,
-                                        "success"
-                                      )
-                                    );
-                                  }
-
-                                  // console.log(res.Message);
-                                }
-                              })
-                              .catch((e) => {
-                                setTimeout(
-                                  handleOpen(SlideTransition, e, "error")
-                                );
-                              });
-                          }}
-                          edge="end"
-                          aria-label="Edit"
-                        >
-                          <Delete
-                            sx={{
-                              "&:hover": {
-                                color: "red",
-                              },
-                              color: "white",
-                            }}
-                          />
-                        </IconButton>
-                      </>
-                    }
-                  >
-                    <ListItemAvatar key={d._id}>
-                      <Avatar>
-                        <FileCopy />
-                      </Avatar>
-                    </ListItemAvatar>
-
+            {docs == ""
+              ? data?.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
+                  <>
                     <Box
-                      onClick={() => {
-                        let result = viewDocuments(d._id, token);
-
-                        result.then((res) => {
-                          // setUri(res.FileLink);
-                          // console.log(res);
-                          window.open(res.FileLink);
-                        });
-                        // console.log(d._id);
-                      }}
                       sx={{
-                        width: "85%",
+                        "&:hover": {
+                          background: "#CCC7BF",
+                        },
                       }}
                     >
-                      {" "}
-                      <ListItemText
-                        primary={d.docName}
-                        // secondary={d.docDescription}
-                      />
-                    </Box>
-                  </ListItem>
-                </Box>
+                      <ListItem
+                        sx={{
+                          // bgcolor: "#CCC7BF",
+                          bgcolor: "inherit",
+                          color: "white",
+                        }}
+                        key={d._id}
+                        // onDoubleClick={() => {}}
+                        // onClick={handleClickOpen}
+                        secondaryAction={
+                          <>
+                            <IconButton
+                              //   key={d._id}
+                              onClick={() => {
+                                setItem(d);
+                                console.log(d);
+                                handleClickOpen();
+                              }}
+                              edge="end"
+                              aria-label="Edit"
+                            >
+                              <Edit
+                                sx={{
+                                  "&:hover": {
+                                    color: "blue",
+                                  },
+                                  color: "white",
+                                }}
+                              />
+                            </IconButton>
+                            &#160; &#160; &#160;
+                            <IconButton
+                              onClick={() => {
+                                //  console.log(d._id);
+                                let result = deleteDocuments(d._id, token);
+                                result
+                                  .then((res) => {
+                                    if (res) {
+                                      if (res.Status == 400) {
+                                        setTimeout(
+                                          handleOpen(
+                                            SlideTransition,
+                                            res.Message,
+                                            "error"
+                                          )
+                                        );
+                                      } else {
+                                        setTimeout(
+                                          handleOpen(
+                                            SlideTransition,
+                                            res.Message,
+                                            "success"
+                                          )
+                                        );
+                                        dispatch(refetch());
+                                      }
 
-                <br />
-              </>
-            ))}
+                                      // console.log(res.Message);
+                                    }
+                                  })
+                                  .catch((e) => {
+                                    setTimeout(
+                                      handleOpen(SlideTransition, e, "error")
+                                    );
+                                  });
+                              }}
+                              edge="end"
+                              aria-label="Edit"
+                            >
+                              <Delete
+                                sx={{
+                                  "&:hover": {
+                                    color: "red",
+                                  },
+                                  color: "white",
+                                }}
+                              />
+                            </IconButton>
+                          </>
+                        }
+                      >
+                        <ListItemAvatar key={d._id}>
+                          <Avatar>
+                            <FileCopy />
+                          </Avatar>
+                        </ListItemAvatar>
+
+                        <Box
+                          onClick={() => {
+                            let result = viewDocuments(d._id, token);
+
+                            result.then((res) => {
+                              // setUri(res.FileLink);
+                              // console.log(res);
+                              window.open(res.FileLink);
+                            });
+                            // console.log(d._id);
+                          }}
+                          sx={{
+                            width: "85%",
+                          }}
+                        >
+                          {" "}
+                          <ListItemText
+                            primary={d.docName}
+                            // secondary={d.docDescription}
+                          />
+                        </Box>
+                      </ListItem>
+                    </Box>
+
+                    <br />
+                  </>
+                ))
+              : docs?.slice(indexOfFirstRecord, indexOfLastRecord).map((d) => (
+                  <>
+                    <Box
+                      sx={{
+                        "&:hover": {
+                          background: "#CCC7BF",
+                        },
+                      }}
+                    >
+                      <ListItem
+                        sx={{
+                          // bgcolor: "#CCC7BF",
+                          bgcolor: "inherit",
+                          color: "white",
+                        }}
+                        key={d._id}
+                        // onDoubleClick={() => {}}
+                        // onClick={handleClickOpen}
+                        secondaryAction={
+                          <>
+                            <IconButton
+                              //   key={d._id}
+                              onClick={() => {
+                                setItem(d);
+                                handleClickOpen();
+                              }}
+                              edge="end"
+                              aria-label="Edit"
+                            >
+                              <Edit
+                                sx={{
+                                  "&:hover": {
+                                    color: "blue",
+                                  },
+                                  color: "white",
+                                }}
+                              />
+                            </IconButton>
+                            &#160; &#160; &#160;
+                            <IconButton
+                              onClick={() => {
+                                //  console.log(d._id);
+                                let result = deleteDocuments(d._id, token);
+                                result
+                                  .then((res) => {
+                                    if (res) {
+                                      if (res.Status == 400) {
+                                        setTimeout(
+                                          handleOpen(
+                                            SlideTransition,
+                                            res.Message,
+                                            "error"
+                                          )
+                                        );
+                                      } else {
+                                        setTimeout(
+                                          handleOpen(
+                                            SlideTransition,
+                                            res.Message,
+                                            "success"
+                                          )
+                                        );
+                                        dispatch(refetch());
+                                      }
+
+                                      // console.log(res.Message);
+                                    }
+                                  })
+                                  .catch((e) => {
+                                    setTimeout(
+                                      handleOpen(SlideTransition, e, "error")
+                                    );
+                                  });
+                              }}
+                              edge="end"
+                              aria-label="Edit"
+                            >
+                              <Delete
+                                sx={{
+                                  "&:hover": {
+                                    color: "red",
+                                  },
+                                  color: "white",
+                                }}
+                              />
+                            </IconButton>
+                          </>
+                        }
+                      >
+                        <ListItemAvatar key={d._id}>
+                          <Avatar>
+                            <FileCopy />
+                          </Avatar>
+                        </ListItemAvatar>
+
+                        <Box
+                          onClick={() => {
+                            let result = viewDocuments(d._id, token);
+
+                            result.then((res) => {
+                              // setUri(res.FileLink);
+                              // console.log(res);
+                              window.open(res.FileLink);
+                            });
+                            // console.log(d._id);
+                          }}
+                          sx={{
+                            width: "85%",
+                          }}
+                        >
+                          {" "}
+                          <ListItemText
+                            primary={d.docName}
+                            // secondary={d.docDescription}
+                          />
+                        </Box>
+                      </ListItem>
+                    </Box>
+
+                    <br />
+                  </>
+                ))}
           </List>
-        </Paper>
-      )}
+
+          <Pagination
+            // variant="outlined"
+            size="small"
+            style={{
+              paddingTop: "3px",
+              // paddingBottom: "8px",
+              // accentColor: "white",
+              background: "#f2f2f2",
+              color: "white",
+            }}
+            // color="light"
+            count={nPages}
+            onChange={handleChange}
+            currentPage={currentPage}
+          />
+        </Stack>
+      </Paper>
 
       <Update
         open={open}

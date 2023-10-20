@@ -18,6 +18,8 @@ import { CloudUpload } from "@mui/icons-material";
 import { updateDocuments } from "../Querries/querries";
 import { validate, validateUpdate } from "../Utils/Validate";
 import { updateformdata } from "../Utils/FormData";
+import { useDispatch } from "react-redux";
+import { refetch } from "../Provider/Refetch/refetchSlice";
 
 function SlideTransition(props) {
   return <Slide {...props} direction="up" />;
@@ -37,50 +39,72 @@ const VisuallyHiddenInput = styled("input")({
 
 const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
   const token = localStorage?.getItem("token");
+  // console.log("qewqeqw");
+  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [filename, setFilename] = useState("");
   const [fileValue, setFileValue] = useState("");
+
   function onSubmit(e) {
     e.preventDefault();
-    const validatedData = validateUpdate(name, description, file);
-    if (validatedData.Status) {
-      let result = updateDocuments(
-        updateformdata(
-          item._id,
-          name ?? item.docName,
-          description ?? item.docDescription,
-          file,
-          filename ?? item.fileName
-        ),
-        token
-      );
-      result
-        .then((res) => {
-          handleclose();
-          if (res) {
-            if (res.Status == 400) {
-              setTimeout(handleOpen(SlideTransition, res.Message, "error"));
-            } else {
-              setTimeout(handleOpen(SlideTransition, res.Message, "success"));
-            }
-            // console.log(res.Message);
-          }
 
-          setName("");
-          setDescription("");
-          setFileValue(null);
-          setFile(null);
-          setFilename("");
-        })
-        .catch((e) => {
-          setTimeout(handleOpen(SlideTransition, e, "error"));
-        });
-    } else {
-      handleclose();
-      setTimeout(handleOpen(SlideTransition, validatedData.Message, "error"));
-    }
+    // console.log(name, description);
+    // const validatedData = validateUpdate(name, description, file);
+    // if (validatedData.Status) {
+    updateDocuments(item._id, name, description, token)
+      .then((res) => {
+        handleclose();
+        if (res) {
+          if (res.Status == 400) {
+            setTimeout(handleOpen(SlideTransition, res.Message, "error"));
+          } else {
+            setTimeout(handleOpen(SlideTransition, res.Message, "success"));
+            dispatch(refetch());
+          }
+          // console.log(res.Message);
+        }
+
+        setName("");
+        setDescription("");
+        setFileValue(null);
+        setFile(null);
+        setFilename("");
+      })
+      .catch((e) => {
+        setTimeout(handleOpen(SlideTransition, e, "error"));
+      });
+
+    // console.log(result);
+    // result
+    //   .then((res) => {
+    //     handleclose();
+    //     if (res) {
+    //       if (res.Status == 400) {
+    //         setTimeout(handleOpen(SlideTransition, res.Message, "error"));
+    //       } else {
+    //         setTimeout(handleOpen(SlideTransition, res.Message, "success"));
+    //         // dispatch(refetch());
+    //       }
+    //       console.log(res.Message);
+    //     }
+
+    //     setName("");
+    //     setDescription("");
+    //     setFileValue(null);
+    //     setFile(null);
+    //     setFilename("");
+    //   })
+    //   .catch((e) => {
+    //     setTimeout(handleOpen(SlideTransition, e, "error"));
+    //   });
+    // // } else {
+    // //   handleclose();
+    // //   setTimeout(handleOpen(SlideTransition, validatedData.Message, "error"));
+    // // }
+
+    // // console.log(qqweqwe);
   }
 
   return (
@@ -128,42 +152,42 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
                 }}
               >
                 {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
-                <form onSubmit={onSubmit}>
-                  <TextField
-                    // ref={name}
-                    variant="outlined"
-                    label={"Document Name"}
-                    type="text"
-                    name=""
-                    id=""
-                    value={name}
-                    // defaultValue={item.docName}
-                    placeholder={item.docName}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setName(e.target.value);
-                    }}
-                  />
-                  <br />
-                  <br />
 
-                  <TextField
-                    // ref={description}
-                    variant="outlined"
-                    label={"Document Description"}
-                    type="text"
-                    name=""
-                    id=""
-                    value={description}
-                    placeholder={item.docDescription}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setDescription(e.target.value);
-                    }}
-                  />
-                  <br />
-                  <br />
-                  <Box>{filename}</Box>
+                <TextField
+                  // ref={name}
+                  variant="outlined"
+                  label={"Document Name"}
+                  type="text"
+                  name=""
+                  id=""
+                  value={name}
+                  // defaultValue={item.docName}
+                  placeholder={item.docName}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setName(e.target.value);
+                  }}
+                />
+                <br />
+                <br />
+
+                <TextField
+                  // ref={description}
+                  variant="outlined"
+                  label={"Document Description"}
+                  type="text"
+                  name=""
+                  id=""
+                  value={description}
+                  placeholder={item.docDescription}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setDescription(e.target.value);
+                  }}
+                />
+                <br />
+                <br />
+                {/* <Box>{filename}</Box>
                   <Button
                     component="label"
                     variant="contained"
@@ -184,17 +208,16 @@ const UpdateForm = ({ open, handleclose, formTitle, handleOpen, item }) => {
                   </Button>
 
                   <br />
-                  <br />
+                  <br /> */}
 
-                  <Input
-                    component="label"
-                    variant="contained"
-                    type="submit"
-                    // onClick={onSubmit}
-                  >
-                    Add document
-                  </Input>
-                </form>
+                <Button
+                  component="label"
+                  variant="contained"
+                  // type="submit"
+                  onClick={onSubmit}
+                >
+                  Update
+                </Button>
               </Paper>
             </Box>
           </DialogContentText>

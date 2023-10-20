@@ -50,7 +50,7 @@ function Add(req, res) {
 //Get all the Documents
 //Route GET /docs
 function GetAllDocuments(req, res) {
-    Document.find({}).then((doc)=>{
+    Document.find({}).sort({ createdAt: 'desc' }).then((doc)=>{
         res.status(200).json(doc);
 
     }).catch((e)=>{
@@ -62,34 +62,53 @@ function GetAllDocuments(req, res) {
 
 }
 
-function UpdateDocument(req, res) {
-    const{ItemID, Name, Description, fileName} = req.body;
-    const{UNIQUESUFFIX} = req;
-    const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
-    console.log(req)
-if (!UNIQUESUFFIX) {
-        return;
-}
-else {
-    Document.findById(ItemID).then((doc)=>
-    fs.unlink(doc.fileLink, function (err) {
-        if (err) throw err;
-        console.log('File deleted!');
-      })
+function findDocument(req, res) {
+    const {search} = req.body;
+
+  
+    Document.find({docName: search}).sort({ createdAt: 'desc' }).then((doc)=>{
     
-    ).catch((e)=>{
+            res.status(200).json(doc);
+    
+
+       
+
+    }).catch((e)=>{
         res.status(404).json({'Message': `${e}`})
-    });
+    })
+
+  
+
+
 }
+
+function UpdateDocument(req, res) {
+    const{ItemID, Name, Description} = req.body;
+    // const{UNIQUESUFFIX} = req;
+    // const FileLink = path.join(__dirname, '../', "storage", String(UNIQUESUFFIX));
+    // console.log(req)
+
+    // Document.findById(ItemID).then((doc)=>{
+    //     fs.unlink(doc.fileLink, function (err) {
+    //         if (err) throw err;
+    //         console.log('File deleted!');
+    //       })
+    // }
+//  console.log(req)
+    
+    // ).catch((e)=>{
+    //     res.status(404).json({'Message': `${e}`})
+    // });
+
  
     Document.findByIdAndUpdate(ItemID,
         
         
         { 
             docName: Name,
-            docDescription: Description,
-            fileName: UNIQUESUFFIX,
-            fileLink:FileLink
+            docDescription: Description
+            // fileName: UNIQUESUFFIX,
+            // fileLink:FileLink
         
         }).then(()=>{
         res.status(200).json({'Message': "Updated"});
@@ -145,4 +164,4 @@ function viewDocument(req, res) {
 
 }
 
-module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument}
+module.exports = {Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument, findDocument}
