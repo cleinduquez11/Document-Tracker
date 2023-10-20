@@ -18,7 +18,6 @@ function Authenticate(req, res) {
                 }
               });
           
-            //   console.log(uSer);
             if (uSer) {
                 const accessToken =  jwt.sign({
                     username: uSer.username,
@@ -34,11 +33,11 @@ function Authenticate(req, res) {
                 },
                 refresh_secret_key
                 ,
-                // {expiresIn: '24h'}
+                 {expiresIn: '24h'}
             
                 );
 
-                User.findByIdAndUpdate(uSer._id, {"refreshToken": refreshToken}).then(()=>{
+                User.findByIdAndUpdate(uSer._id ,{$push:{"refreshTokens":  refreshToken }}).then(()=>{
                     res.status(200).json({"message": "You are now Authenticated","_id": uSer._id, "username":uSer.username, "isAdmin": uSer.isAdmin,"AccessToken" : accessToken, "RefreshToken":refreshToken});
                 });
             
@@ -61,70 +60,48 @@ function Authenticate(req, res) {
 }
 
 
-function RefreshToken(req, res) {
+async function RefreshToken(req, res) {
     const {refreshtoken} = req.body;
-    User.where({"refreshToken": refreshtoken}).then((u)=> {
-  
-           
-        // console.log(u);
-            let uSer = _.find(u, (user)=>{
-                if(user.refreshToken){
-                  
-                 return u
-                }
-              });
-          
-            //   console.log(uSer);
-            if (uSer) {
-                const accessToken =  jwt.sign({
-                    username: uSer.username,
-                },
-                secret_key
-                ,
-                {expiresIn: '60s'}
-            
-                );
 
-                // const refreshToken =  jwt.sign({
-                //     username: uSer.username,
-                // },
-                // refresh_secret_key
-                // ,
-                // // {expiresIn: '24h'}
-            
-                // );
+    try {
+       const user = await User.where({"refreshTokens": refreshtoken});
 
-        res.status(200).json({"message": "You are now Authenticated","_id": uSer._id, "username":uSer.username, "isAdmin": uSer.isAdmin,"AccessToken" : accessToken});
-              
-            
-                
-            }
-            else {
-                res.status(401).json({"message":"You are not Authenticated"});
-            }
-       
-           
-             
-         
-     
-    }).catch((e)=>{
-        res.status(401).json({"message": "You are not Authenticated", "error": e});
-    })
-   
+       if(user){
+        const accessToken =  jwt.sign({
+            username: user.username,
+        },
+        secret_key
+        ,
+        {expiresIn: '60s'}
+    
+        );
 
+    res.status(200).json({"message": "You are now Authenticated",
+        "_id": user._id, 
+        "username":user.username, 
+        "isAdmin": user.isAdmin,
+        "AccessToken" : accessToken});
+       }
+    } catch (error) {
+        res.status(401).json({"message":"You are not Authenticated"});
+    }
 
 }
 
 
-function Logout(req, res){
-    const {id } = req.query;
-    // console.log(id)
-    User.findByIdAndUpdate(id, {"refreshToken": null}).then(()=>{
- res.status(200).json({"message":"Successfully Logged Out"});
-    });
+async function Logout(req, res){
+    const {id, refreshtoken } = req.query;
+
+    try {
+        const logOutUser = await User.findByIdAndUpdate(id, {$pull:{"refreshTokens": refreshtoken}});
+        if (logOutUser) {
+            res.status(200).json({"message":"Successfully Logged Out"});
+        }
+    } catch (error) {
+        res.status(404).json({"message":"Error"});
+    }
+
    
-
-
 }
 
 

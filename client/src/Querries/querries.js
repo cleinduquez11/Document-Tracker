@@ -1,10 +1,10 @@
 import { JSONQueryWithAutoRefresh, MULTIPARTQueryWithAutoRefresh} from "./AutoRefresh";
 
 
-
+const url = 'http://10.10.10.125:5000'
 
 async function addDocuments(formData,token,refresh) {
-  const res = await MULTIPARTQueryWithAutoRefresh("http://localhost:5000/docs",
+  const res = await MULTIPARTQueryWithAutoRefresh(`${url}/docs`,
     "POST", 
     token,
      refresh,
@@ -18,10 +18,8 @@ async function addDocuments(formData,token,refresh) {
 
 async function login(user,pass) {
     try {
-      const response = await fetch("http://localhost:5000/auth", {
-
+      const response = await fetch(`${url}/auth`, {
         method: "POST",
-        
         body: JSON.stringify({
           "user": user,
           "pass": pass
@@ -42,7 +40,7 @@ async function login(user,pass) {
 
 
 async function updateDocuments(id, name, description, token, refresh) {
-    const res = JSONQueryWithAutoRefresh(`http://localhost:5000/docs`, 
+    const res = JSONQueryWithAutoRefresh(`${url}/docs`, 
     "PATCH",
     token,
      refresh,
@@ -59,16 +57,16 @@ async function updateDocuments(id, name, description, token, refresh) {
 
   async function deleteDocuments(id, token,refresh) {
 
-    const res = MULTIPARTQueryWithAutoRefresh(`http://localhost:5000/docs?id=${id}`,"DELETE", token, refresh, null);
+    const res = MULTIPARTQueryWithAutoRefresh(`${url}/docs?id=${id}`,"DELETE", token, refresh, null);
 
     return res;
    
   }
 
 
-async function logout(id) {
+async function logout(id, refresh) {
     try {
-      const response = await fetch(`http://localhost:5000/auth/logout?id=${id}`, {
+      const response = await fetch(`${url}/auth/logout?id=${id}&refreshtoken=${refresh}`, {
         method: "DELETE",
       });
       const result = await response.json();
@@ -83,7 +81,7 @@ async function logout(id) {
 
 
 async function viewDocuments(id,token, refresh) {
-    const res = await JSONQueryWithAutoRefresh("http://localhost:5000/docs/views",
+    const res = await JSONQueryWithAutoRefresh(`${url}/docs/views`,
     "POST", 
     token,
      refresh,
@@ -102,7 +100,7 @@ async function viewDocuments(id,token, refresh) {
 
 async function getAllDocuments(token, refresh) {
 
- const res = await JSONQueryWithAutoRefresh("http://localhost:5000/docs",
+ const res = await JSONQueryWithAutoRefresh(`${url}/docs`,
  "GET", 
  token,
  refresh,null);
@@ -113,7 +111,7 @@ async function getAllDocuments(token, refresh) {
 
 async function findDocument(search, token, refresh) {
 
-const res = JSONQueryWithAutoRefresh("http://localhost:5000/docs/search",
+const res = JSONQueryWithAutoRefresh(`${url}/docs/search`,
     "POST",
     token, 
     refresh,

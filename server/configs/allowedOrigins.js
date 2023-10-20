@@ -6,6 +6,7 @@ const allowedOrigins = [
     'http://localhost:5174',
     'http://localhost:3000',
     'http://10.10.10.125:5173',
+    'http://10.10.10.125:5000',
     
 ]
 

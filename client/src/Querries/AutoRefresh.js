@@ -1,4 +1,4 @@
-
+const URL = 'http://10.10.10.125:5000'
 async function JSONQueryWithAutoRefresh(url, method, token,refresh,body) {
     try {
         const response = await fetch(url, {
@@ -15,11 +15,11 @@ async function JSONQueryWithAutoRefresh(url, method, token,refresh,body) {
         const result = await response.json();
   
 
-         console.log(result);
+        //  console.log(result);
         if (result.status===403) {
-             console.log("Error 403");
+           
           try {
-            const response = await fetch("http://localhost:5000/auth/refresh", {
+            const response = await fetch(`${URL}/auth/refresh`, {
               method: "POST",
               body: JSON.stringify({
                 "refreshtoken":refresh 
@@ -32,7 +32,7 @@ async function JSONQueryWithAutoRefresh(url, method, token,refresh,body) {
             });
   
             const res = await response.json();
-             console.log(res);
+           
            localStorage.setItem("token", res.AccessToken);
   
            try {
@@ -65,7 +65,7 @@ async function JSONQueryWithAutoRefresh(url, method, token,refresh,body) {
        
   
       } catch (error) {
-        console.log("Error:", error);
+        console.log("Error:", error.message);
       }
 }
 
@@ -85,11 +85,11 @@ async function MULTIPARTQueryWithAutoRefresh(url, method, token,refresh, body) {
         const result = await response.json();
   
 
-         console.log(result);
+    
         if (result.status===403) {
-             console.log("Error 403");
+         
           try {
-            const response = await fetch("http://localhost:5000/auth/refresh", {
+            const response = await fetch(`${URL}/auth/refresh`, {
               method: "POST",
               body: JSON.stringify({
                 "refreshtoken":refresh 
@@ -102,7 +102,7 @@ async function MULTIPARTQueryWithAutoRefresh(url, method, token,refresh, body) {
             });
   
             const res = await response.json();
-             console.log(res);
+          
            localStorage.setItem("token", res.AccessToken);
   
            try {

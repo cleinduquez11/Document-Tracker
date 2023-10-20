@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -37,7 +37,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
+export default function AddForm({ open, handleclose, formTitle, handleOpen }) {
   const dispatch = useDispatch();
   const token = localStorage?.getItem("token");
   const refresh = localStorage?.getItem("refreshtoken");
@@ -45,8 +45,6 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState("");
   const [filename, setFilename] = useState("");
-  const [fileValue, setFileValue] = useState("");
-  const [clicked, setClicked] = useState(false);
 
   function onSubmit(e) {
     e.preventDefault();
@@ -58,13 +56,11 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
         token,
         refresh
       );
-      // setClicked((previous) => {
-      //   previous = !previous;
-      // });
+
       result
         .then((res) => {
           handleclose();
-          handleClick();
+
           if (res) {
             if (res.Status == 400) {
               setTimeout(handleOpen(SlideTransition, res.Message, "error"));
@@ -72,16 +68,12 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
               dispatch(refetch());
               setTimeout(handleOpen(SlideTransition, res.Message, "success"));
             }
-
-            // console.log(res.Message);
           }
 
           setName("");
           setDescription("");
-          setFileValue(null);
           setFile(null);
           setFilename("");
-          // window.location.reload();
         })
         .catch((e) => {
           setTimeout(handleOpen(SlideTransition, e, "error"));
@@ -91,12 +83,6 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
       setTimeout(handleOpen(SlideTransition, validatedData.Message, "error"));
     }
   }
-
-  // function isClicked() {}
-  // useEffect(() => {
-  //   localStorage.setItem("submitted", clicked);
-  //   // isClicked();
-  // }, [clicked]);
 
   return (
     <>
@@ -111,7 +97,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
         <DialogTitle>
           <Typography
             variant="h6"
-            component="div"
+            // component="div"
             sx={{
               flexGrow: 1,
               color: "black",
@@ -126,8 +112,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
               sx={{
                 width: "270px",
                 overflow: "hidden",
-                // paddingLeft: "20px",
-                // paddingRight: "20px",
+
                 marginTop: "20px ",
               }}
             >
@@ -135,21 +120,18 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
                 elevation={0}
                 sx={{
                   padding: "3px",
-                  // gap: "20px",
+
                   textAlign: "center",
                 }}
               >
-                {/* <Button onClick={handleClick(SlideTransition)}>Slide Transition</Button> */}
                 <form onSubmit={onSubmit}>
                   <TextField
-                    // ref={name}
                     variant="outlined"
                     label="Document Name"
                     type="text"
                     name=""
                     id=""
                     value={name}
-                    // placeholder={selectedDocument.docName}
                     onChange={(e) => {
                       e.preventDefault();
                       setName(e.target.value);
@@ -159,14 +141,12 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
                   <br />
 
                   <TextField
-                    // ref={description}
                     variant="outlined"
                     label="Document Description"
                     type="text"
                     name=""
                     id=""
                     value={description}
-                    // placeholder={selectedDocument.docDescription}
                     onChange={(e) => {
                       e.preventDefault();
                       setDescription(e.target.value);
@@ -182,13 +162,11 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
                   >
                     Upload file
                     <VisuallyHiddenInput
-                      // ref={file}
                       id="file"
                       onChange={(e) => {
                         e.preventDefault();
                         setFile(e.target.files[0]);
                         setFilename(e.target.files[0].name);
-                        setFileValue(e.target.value);
                       }}
                       type="file"
                     />
@@ -197,12 +175,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
                   <br />
                   <br />
 
-                  <Input
-                    component="label"
-                    variant="contained"
-                    type="submit"
-                    // onClick={onSubmit}
-                  >
+                  <Input component="label" variant="contained" type="submit">
                     Add document
                   </Input>
                 </form>
@@ -210,17 +183,7 @@ const AddForm = ({ open, handleclose, formTitle, handleOpen, handleClick }) => {
             </Box>
           </DialogContentText>
         </DialogContent>
-        {/* <DialogActions>
-              <Button style={{ color: "red" }} onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button style={{ color: "green" }} onClick={handleClose}>
-                Add
-              </Button>
-            </DialogActions> */}
       </Dialog>
     </>
   );
-};
-
-export default AddForm;
+}

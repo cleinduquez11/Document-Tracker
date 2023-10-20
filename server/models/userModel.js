@@ -24,7 +24,12 @@ accessToken:{
 },
 refreshToken:{
     type:String,
+},
+refreshTokens:{
+    type: Array,
+    default:[""]
 }
+
 
 },
 {

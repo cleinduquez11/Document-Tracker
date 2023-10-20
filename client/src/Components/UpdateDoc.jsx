@@ -3,7 +3,13 @@ import UpdateForm from "./UpdateForm";
 import Notification from "./Notification";
 import { Fade } from "@mui/material";
 
-const Update = ({ open, handleClose, formTitle, handleClickOpen, item }) => {
+export default function Update({
+  open,
+  handleClose,
+  formTitle,
+  handleClickOpen,
+  item,
+}) {
   const [state, setState] = useState({
     open: false,
     Transition: Fade,
@@ -24,7 +30,6 @@ const Update = ({ open, handleClose, formTitle, handleClickOpen, item }) => {
       open: false,
     });
   };
-  // console.log(item);
   return (
     <>
       <UpdateForm
@@ -42,6 +47,4 @@ const Update = ({ open, handleClose, formTitle, handleClickOpen, item }) => {
       />
     </>
   );
-};
-
-export default Update;
+}

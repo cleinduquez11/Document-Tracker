@@ -1,13 +1,13 @@
 const express = require('express');
-const { Add, GetAllDocuments, UpdateDocument, deleteDocument, viewDocument, findDocument } = require('../controllers/docController');
+const {deleteDocument, viewDocument, findDocument, addDocument, getAllDocuments, updateDocument } = require('../controllers/docController');
 const { upload } = require('../middleware/upload');
 const router = express.Router();
 
 
 router.route('/')
-.post(upload.single('uploaded'), Add)
-.get(GetAllDocuments)
-.patch(UpdateDocument)
+.post(upload.single('uploaded'), addDocument)
+.get(getAllDocuments)
+.patch(updateDocument)
 .delete(deleteDocument)
 
 
